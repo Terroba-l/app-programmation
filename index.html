@@ -326,7 +326,7 @@ let _exNames=[];
 let week=1;
 function card(id){
   if(id==='rest') return `<div class="rc"><div class="ri">😴</div><div class="rl">Repos</div></div>`;
-  if(id==='lutte_day') return `<div class="sc lutte_c"><span class="si">🤼</span><div class="sbg" style="background:rgba(14,165,233,.12);color:var(--lutte-c)">Lutte</div><div class="st">Entraînement Lutte</div><div class="ss">Gréco-Romaine · Technique · Sparring</div><div class="sf" style="margin-top:auto"><span class="sdur">~2h</span></div></div>`;
+  if(id==='lutte_day') return `<div class="sc lutte_c"><span class="si">🤼</span><div class="sbg" style="background:rgba(14,165,233,.12);color:var(--lutte-c)">Lutte</div><div class="st">Rép. Technique + Thème</div><div class="ss">45 min rep · 25-40 min lutte à thème</div><div class="sf" style="margin-top:auto"><span class="sdur">~85 min</span></div></div>`;
   if(id==='ppg_day') return `<div class="sc ppg_c"><span class="si">🏃</span><div class="sbg" style="background:rgba(163,230,53,.12);color:var(--ppg-c)">PPG</div><div class="st">Prépa Physique Générale</div><div class="ss">Cardio · Mobilité · Gainage</div><div class="sf" style="margin-top:auto"><span class="sdur">~1h</span></div></div>`;
   const s=S[id],t=T[s.type];
   let dd='<div class="dots">';
