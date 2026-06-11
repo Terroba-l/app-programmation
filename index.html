@@ -49,7 +49,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sc.lutte_c::before{background:var(--lutte-c)}.sc.ppg_c::before{background:var(--ppg-c)}
 .sc.lutte_c,.sc.ppg_c{cursor:default}
 .sc.lutte_c:hover,.sc.ppg_c:hover{transform:none;background:var(--bg2);border-color:var(--border)}
-.sbg{display:inline-flex;font-size:8px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;border-radius:100px;margin-bottom:8px;width:fit-content}
+.sbg{display:inline-flex;font-size:8px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;border-radius:100px;margin-bottom:6px;width:fit-content}
 .force .sbg{background:rgba(124,92,252,.12);color:var(--force)}.explo .sbg{background:rgba(255,107,53,.12);color:var(--explo)}
 .lact .sbg{background:rgba(230,57,70,.12);color:var(--lact)}.plyo .sbg{background:rgba(48,209,88,.12);color:var(--plyo)}
 .endu .sbg{background:rgba(255,159,10,.12);color:var(--endu)}
@@ -62,6 +62,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .force .dot.on{background:var(--force)}.explo .dot.on{background:var(--explo)}
 .lact .dot.on{background:var(--lact)}.plyo .dot.on{background:var(--plyo)}.endu .dot.on{background:var(--endu)}
 .sdur{font-size:10px;font-weight:700;color:var(--dim);margin-left:auto}
+.ltheme{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(14,165,233,.65);margin-bottom:5px}
+.ltechs{font-size:10px;color:rgba(14,165,233,.45);margin-top:5px;line-height:1.4}
 .rc{border:1px dashed var(--border);border-radius:var(--r);min-height:175px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:.35}
 .ri{font-size:26px}.rl{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:200;opacity:0;pointer-events:none;transition:.25s}
@@ -300,13 +302,45 @@ const S={
     ],
     notes:'Intensité très basse. Aucun lactique. Récupération active et travail technique.',cd:'Étirements 15 min'}
 };
+const LUTTE_THEMES={
+  1:{
+    theme:'Setup & Déclenchement',
+    lundi:{title:'Intro — Setups',sub:'Créer l\'occasion · Lecture de posture',dur:'~70 min'},
+    mercredi:{title:'Consolid. — Timing',sub:'Drill en mouvement · Ouvrir les fenêtres',dur:'~75 min'},
+    vendredi:{title:'Appli — Lutte à thème',sub:'Setup → attaque · Répétition en situation',dur:'~80 min'}
+  },
+  2:{
+    theme:'Enchaînements',
+    lundi:{title:'Intro — Double → Simple',sub:'Transition entre attaques · Drill isolé',dur:'~70 min'},
+    mercredi:{title:'Consolid. — Fluidité',sub:'John Smith → Double · 3 enchaînements',dur:'~75 min'},
+    vendredi:{title:'Appli — Séquences libres',sub:'Enchaînements des 3 · Situations',dur:'~80 min'}
+  },
+  3:{
+    theme:'Défenses & Contre-attaques',
+    lundi:{title:'Intro — Sortir de la défense',sub:'Plan B après blocage · Drill isolé',dur:'~70 min'},
+    mercredi:{title:'Consolid. — Variations',sub:'Plan B & C · Repositionnement',dur:'~75 min'},
+    vendredi:{title:'Appli — Contre-attaque',sub:'Situations de contre · Lutte thématique',dur:'~80 min'}
+  },
+  4:{
+    theme:'Situations de Match',
+    lundi:{title:'Intro — Pression & Timing',sub:'Déclencher sous pression · Drill',dur:'~70 min'},
+    mercredi:{title:'Consolid. — Lecture en match',sub:'Situations proches compétition',dur:'~75 min'},
+    vendredi:{title:'Appli — Match play',sub:'Condition match · Lutte libre thématique',dur:'~80 min'}
+  },
+  5:{
+    theme:'Décharge — Technique Pure',
+    lundi:{title:'Double jambe — Lent',sub:'50% volume · Amplitude complète',dur:'~50 min'},
+    mercredi:{title:'Jambe simple glissé — Lent',sub:'50% volume · Focus placement',dur:'~50 min'},
+    vendredi:{title:'John Smith — Lent',sub:'50% volume · Technique pure',dur:'~50 min'}
+  }
+};
 const DAYS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 const WEEKS={
-  1:['lutte_day','force4','lutte_day','explo1','lutte_day','lact2','ppg_day'],
-  2:['lutte_day','force2','lutte_day','fullbody','lutte_day','lactiqueP','ppg_day'],
-  3:['lutte_day','endu5','lutte_day','explo3','lutte_day','lactiqueC','ppg_day'],
-  4:['lutte_day','endu3','lutte_day','grip','lutte_day','plyo','ppg_day'],
-  5:['lutte_day','deload_force','lutte_day','deload_explo','lutte_day','plyo','ppg_day']
+  1:['lutte_lundi','force4','lutte_mercredi','explo1','lutte_vendredi','lact2','ppg_day'],
+  2:['lutte_lundi','force2','lutte_mercredi','fullbody','lutte_vendredi','lactiqueP','ppg_day'],
+  3:['lutte_lundi','endu5','lutte_mercredi','explo3','lutte_vendredi','lactiqueC','ppg_day'],
+  4:['lutte_lundi','endu3','lutte_mercredi','grip','lutte_vendredi','plyo','ppg_day'],
+  5:['lutte_lundi','deload_force','lutte_mercredi','deload_explo','lutte_vendredi','plyo','ppg_day']
 };
 let LOGS={};
 try{LOGS=JSON.parse(localStorage.getItem('lutte_logs')||'{}');}catch(e){}
@@ -326,7 +360,12 @@ let _exNames=[];
 let week=1;
 function card(id){
   if(id==='rest') return `<div class="rc"><div class="ri">😴</div><div class="rl">Repos</div></div>`;
-  if(id==='lutte_day') return `<div class="sc lutte_c"><span class="si">🤼</span><div class="sbg" style="background:rgba(14,165,233,.12);color:var(--lutte-c)">Lutte</div><div class="st">Rép. Technique + Thème</div><div class="ss">45 min rep · 25-40 min lutte à thème</div><div class="sf" style="margin-top:auto"><span class="sdur">~85 min</span></div></div>`;
+  if(id==='lutte_lundi'||id==='lutte_mercredi'||id==='lutte_vendredi'){
+    const day=id.slice(6);
+    const th=LUTTE_THEMES[week];
+    const d=th[day];
+    return `<div class="sc lutte_c"><span class="si">🤼</span><div class="sbg" style="background:rgba(14,165,233,.12);color:var(--lutte-c)">Lutte</div><div class="ltheme">${th.theme}</div><div class="st">${d.title}</div><div class="ss">${d.sub}</div><div class="ltechs">Double · Simple glissé · John Smith</div><div class="sf" style="margin-top:auto"><span class="sdur">${d.dur}</span></div></div>`;
+  }
   if(id==='ppg_day') return `<div class="sc ppg_c"><span class="si">🏃</span><div class="sbg" style="background:rgba(163,230,53,.12);color:var(--ppg-c)">PPG</div><div class="st">Prépa Physique Générale</div><div class="ss">Cardio · Mobilité · Gainage</div><div class="sf" style="margin-top:auto"><span class="sdur">~1h</span></div></div>`;
   const s=S[id],t=T[s.type];
   let dd='<div class="dots">';
