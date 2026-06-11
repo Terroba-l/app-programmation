@@ -18,6 +18,7 @@
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
   --text:#ececf4;--dim:rgba(236,236,244,0.45);--dim2:rgba(236,236,244,0.22);
   --red:#e63946;--force:#7c5cfc;--explo:#ff6b35;--lact:#e63946;--plyo:#30d158;--endu:#ff9f0a;
+  --lutte-c:#0ea5e9;--ppg-c:#a3e635;
   --r:16px
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
@@ -45,6 +46,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sc:hover{transform:translateY(-3px);border-color:var(--border2);background:var(--bg3)}
 .sc.force::before{background:var(--force)}.sc.explo::before{background:var(--explo)}
 .sc.lact::before{background:var(--lact)}.sc.plyo::before{background:var(--plyo)}.sc.endu::before{background:var(--endu)}
+.sc.lutte_c::before{background:var(--lutte-c)}.sc.ppg_c::before{background:var(--ppg-c)}
+.sc.lutte_c,.sc.ppg_c{cursor:default}
+.sc.lutte_c:hover,.sc.ppg_c:hover{transform:none;background:var(--bg2);border-color:var(--border)}
 .sbg{display:inline-flex;font-size:8px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;border-radius:100px;margin-bottom:8px;width:fit-content}
 .force .sbg{background:rgba(124,92,252,.12);color:var(--force)}.explo .sbg{background:rgba(255,107,53,.12);color:var(--explo)}
 .lact .sbg{background:rgba(230,57,70,.12);color:var(--lact)}.plyo .sbg{background:rgba(48,209,88,.12);color:var(--plyo)}
@@ -93,7 +97,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ntit{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--force);margin-bottom:7px}
 .ntxt{font-size:12.5px;color:var(--dim);line-height:1.65}
 .cd{background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:12px 14px;margin-top:8px;font-size:12.5px;color:var(--dim);line-height:1.65}
-/* Log */
 .lbtn{background:none;border:1px solid var(--border);border-radius:6px;color:var(--dim);font-size:10px;font-weight:700;padding:3px 8px;cursor:pointer;margin-top:6px;display:inline-block}
 .lbtn:hover{border-color:var(--border2);color:var(--text)}
 .lf{display:none;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
@@ -106,7 +109,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .lsave{background:var(--force);border:none;border-radius:8px;color:#fff;font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer}
 .ll{font-size:10px;color:var(--dim);margin-top:4px;display:block;line-height:1.4}
 .ll em{font-style:normal;color:var(--dim2)}
-/* Progress modal */
 .pm{position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto;transform:translateY(100%);transition:.32s transform cubic-bezier(.4,0,.2,1)}
 .pm.open{transform:translateY(0)}
 .pm-hdr{padding:26px 24px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:var(--bg);z-index:1}
@@ -128,7 +130,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .empty-prog{text-align:center;padding:60px 20px;color:var(--dim)}
 .empty-prog .ep-i{font-size:48px;margin-bottom:16px}
 .empty-prog p{font-size:13px;line-height:1.7}
-/* FAB */
 .fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:20px;cursor:pointer;z-index:100;transition:.2s;box-shadow:0 4px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
 .fab:hover{background:var(--bg4);transform:scale(1.08)}
 </style>
@@ -142,7 +143,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="stats">
     <div><div class="sv">15</div><div class="sl">Séances</div></div>
     <div><div class="sv">5</div><div class="sl">Semaines</div></div>
-    <div><div class="sv">3/7</div><div class="sl">Jours actifs</div></div>
+    <div><div class="sv">7/7</div><div class="sl">Jours actifs</div></div>
     <div><div class="sv">~960</div><div class="sl">Min / Cycle</div></div>
   </div>
   <div class="sep"></div>
@@ -301,13 +302,12 @@ const S={
 };
 const DAYS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 const WEEKS={
-  1:['rest','force4','rest','explo1','rest','lact2','rest'],
-  2:['rest','force2','rest','fullbody','rest','lactiqueP','rest'],
-  3:['rest','endu5','rest','explo3','rest','lactiqueC','rest'],
-  4:['rest','endu3','rest','grip','rest','plyo','rest'],
-  5:['rest','deload_force','rest','deload_explo','rest','plyo','rest']
+  1:['lutte_day','force4','lutte_day','explo1','lutte_day','lact2','ppg_day'],
+  2:['lutte_day','force2','lutte_day','fullbody','lutte_day','lactiqueP','ppg_day'],
+  3:['lutte_day','endu5','lutte_day','explo3','lutte_day','lactiqueC','ppg_day'],
+  4:['lutte_day','endu3','lutte_day','grip','lutte_day','plyo','ppg_day'],
+  5:['lutte_day','deload_force','lutte_day','deload_explo','lutte_day','plyo','ppg_day']
 };
-// Suivi des charges
 let LOGS={};
 try{LOGS=JSON.parse(localStorage.getItem('lutte_logs')||'{}');}catch(e){}
 function saveLogs(){try{localStorage.setItem('lutte_logs',JSON.stringify(LOGS));}catch(e){}}
@@ -326,6 +326,8 @@ let _exNames=[];
 let week=1;
 function card(id){
   if(id==='rest') return `<div class="rc"><div class="ri">😴</div><div class="rl">Repos</div></div>`;
+  if(id==='lutte_day') return `<div class="sc lutte_c"><span class="si">🤼</span><div class="sbg" style="background:rgba(14,165,233,.12);color:var(--lutte-c)">Lutte</div><div class="st">Entraînement Lutte</div><div class="ss">Gréco-Romaine · Technique · Sparring</div><div class="sf" style="margin-top:auto"><span class="sdur">~2h</span></div></div>`;
+  if(id==='ppg_day') return `<div class="sc ppg_c"><span class="si">🏃</span><div class="sbg" style="background:rgba(163,230,53,.12);color:var(--ppg-c)">PPG</div><div class="st">Prépa Physique Générale</div><div class="ss">Cardio · Mobilité · Gainage</div><div class="sf" style="margin-top:auto"><span class="sdur">~1h</span></div></div>`;
   const s=S[id],t=T[s.type];
   let dd='<div class="dots">';
   for(let i=1;i<=5;i++) dd+=`<div class="dot${i<=s.inten?' on':''}"></div>`;
