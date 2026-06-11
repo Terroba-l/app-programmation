@@ -179,23 +179,25 @@ const T={
   plyo:{l:'Plyométrie',c:'var(--plyo)',bg:'rgba(48,209,88,.12)'},
   endu:{l:'Endurance',c:'var(--endu)',bg:'rgba(255,159,10,.12)'}
 };
+// Maxes : poids de corps 70 kg · bench 90 kg · DL 140 kg · tractions lestées +60 kg
+// Press mil estimé ~55 kg · Squat estimé ~110 kg
 const S={
   force4:{id:'force4',title:'Force – Hypertrophie',sub:'SDT Sumo · Garde Greco · Dév militaire',type:'force',icon:'🏆',inten:5,dur:'85 min',
     wu:['5 min cardio (vélo, rameur, assault bike ou tapis)','4 × 10 reps Élévation frontale haltère 7 kg'],
     blocs:[
-      {n:'Bloc 1',s:'5 tours',ex:[{n:'Soulevé de terre sumo',d:'5 reps @ 80 % — cible [130-160 kg]'},{n:'Kettlebell arraché entre step',d:'10 reps'}]},
-      {n:'Bloc 2',s:'5 tours',ex:[{n:'Fentes avant',d:'5 reps — cible [110-130 kg]'},{n:'Garde Greco position très fléchie',d:'1 min — 30 sec jambe D / 30 sec jambe G'}]},
-      {n:'Bloc 3',s:'5 tours',ex:[{n:'Développé couché au sol haltères, hanches levées',d:'5 reps — haltère 40 kg'},{n:'Lancers de medicine ball au sol',d:'6 reps'}]},
-      {n:'Bloc 4 – Épaules @ 90 %',s:'5 tours',ex:[{n:'Développé militaire',d:'5 reps — cible [55-65 kg]'},{n:'Landmine rotation bas',d:'20 reps (10 / côté)'}]},
+      {n:'Bloc 1',s:'5 tours',ex:[{n:'Soulevé de terre sumo',d:'5 reps @ 80 % — cible ~110 kg'},{n:'Kettlebell arraché entre step',d:'10 reps — KB 20 kg'}]},
+      {n:'Bloc 2',s:'5 tours',ex:[{n:'Fentes avant',d:'5 reps — cible 75-85 kg'},{n:'Garde Greco position très fléchie',d:'1 min — 30 sec jambe D / 30 sec jambe G'}]},
+      {n:'Bloc 3',s:'5 tours',ex:[{n:'Développé couché au sol haltères, hanches levées',d:'5 reps — 30 kg par haltère'},{n:'Lancers de medicine ball au sol',d:'6 reps'}]},
+      {n:'Bloc 4 – Épaules @ 90 %',s:'5 tours',ex:[{n:'Développé militaire',d:'5 reps — cible 50 kg'},{n:'Landmine rotation bas',d:'20 reps (10 / côté)'}]},
       {n:'Bloc 5 – Coordination',s:'',ex:[{n:'Travail de nuque (surpasser) 10 kg',d:'4 × 20 reps'},{n:'Good morning bas',d:'3 × 10 reps'},{n:'Lombaires',d:'4 × 30 reps'}]}
     ],
-    notes:'Poids attendus : SDT Sumo [130-160] · Fente [110-130] · Dév couché 40 kg · Dév militaire [55-65]',cd:null},
+    notes:'Poids attendus : SDT Sumo ~110 kg · Fente 75-85 kg · Dév couché sol 30 kg/haltère · Dév militaire 50 kg',cd:null},
   explo1:{id:'explo1',title:'Explosivité – BM Performance',sub:'Force maximale · Plyométrie · Réactivité',type:'explo',icon:'⚡',inten:4,dur:'70 min',
     wu:['Mobilité : chevilles, hanches, épaules','Activation : jumping jacks, squats, fentes','2 séries légères à 40-50 % du max','1 série plyo basse intensité'],
     blocs:[
-      {n:'Bloc 1 – Force & Puissance',s:'5 tours',ex:[{n:'Soulevé de terre sumo @ 80 % du 1RM',d:'5 reps'},{n:'Kettlebell Snatch alterné ou unilatéral',d:'6 reps'}]},
-      {n:'Bloc 2 – Renforcement Dynamique',s:'5 séries',ex:[{n:'Rowing barre explosif',d:'5 reps'},{n:'Slam med ball au sol',d:'6 reps'},{n:'Dips lestés',d:'5 reps'},{n:'Tractions australiennes explosives',d:'6 reps'}]},
-      {n:'Bloc 3 – Pecs & Core',s:'5 tours',ex:[{n:'Développé couché sol haltères, hanches en extension',d:'5 reps'},{n:'Tirage câble unilatéral (arm-drag)',d:'6 reps'}]},
+      {n:'Bloc 1 – Force & Puissance',s:'5 tours',ex:[{n:'Soulevé de terre sumo @ 80 % du 1RM',d:'5 reps — ~110 kg'},{n:'Kettlebell Snatch alterné ou unilatéral',d:'6 reps — KB 20 kg'}]},
+      {n:'Bloc 2 – Renforcement Dynamique',s:'5 séries',ex:[{n:'Rowing barre explosif',d:'5 reps — 60 kg'},{n:'Slam med ball au sol',d:'6 reps'},{n:'Dips lestés',d:'5 reps — +30 kg'},{n:'Tractions australiennes explosives',d:'6 reps'}]},
+      {n:'Bloc 3 – Pecs & Core',s:'5 tours',ex:[{n:'Développé couché sol haltères, hanches en extension',d:'5 reps — 30 kg par haltère'},{n:'Tirage câble unilatéral (arm-drag)',d:'6 reps'}]},
       {n:'Bloc 4 – Plyométrie',s:'3-4 séries',ex:[{n:'Décélérations contrôlées',d:'8-10 reps'},{n:'Box jump + retombée réactive',d:'5-8 reps'},{n:'Multi-rebonds enchaînés',d:'5-8 reps'},{n:'Déplacements latéraux explosifs',d:'5-8 reps'}]}
     ],
     notes:'Repos 1\'30 à 2\' entre blocs. Prioriser la qualité d\'exécution.',cd:'Retour au calme + étirements dynamiques'},
@@ -209,20 +211,20 @@ const S={
   force2:{id:'force2',title:'Force – Hypertrophie Lutte',sub:'Tirage front · SDT Azeri · Tractions lestées',type:'force',icon:'🏋️',inten:5,dur:'80 min',
     wu:['Mobilité : cervicale, scapulaire, thoracique','Activation : bandes élastiques + rotations épaules','2-3 séries légères de chaque exercice'],
     blocs:[
-      {n:'Tirage frontal & Rowing',s:'5 tours',ex:[{n:'Tirage front sur banc (barre ou haltères)',d:'5 reps'},{n:'Tirage rowing avec serviette',d:'6 reps'}]},
+      {n:'Tirage frontal & Rowing',s:'5 tours',ex:[{n:'Tirage front sur banc (barre ou haltères)',d:'5 reps — 60 kg'},{n:'Tirage rowing avec serviette',d:'6 reps'}]},
       {n:'SDT AZERI',s:'Volume progressif',ex:[{n:'SDT barre 20 kg',d:'70 reps'},{n:'SDT barre 30 kg',d:'50 reps'},{n:'SDT barre 40 kg',d:'30 reps'}]},
-      {n:'Zercher & Med Ball',s:'5 tours',ex:[{n:'Zercher sur chaise romaine',d:'5 reps'},{n:'Maintien med ball "saisie papillon"',d:'20 sec'}]},
-      {n:'Prise alternée & Ball Slam',s:'4 séries',ex:[{n:'Prise alternée barre 35 kg',d:'30 reps'},{n:'Half Kneeling Ball Slam',d:'6 reps (3G / 3D)'}]},
-      {n:'Tractions lestées',s:'3 séries',ex:[{n:'Tractions lestées',d:'8 reps lourdes'}]}
+      {n:'Zercher & Med Ball',s:'5 tours',ex:[{n:'Zercher sur chaise romaine',d:'5 reps — 65 kg'},{n:'Maintien med ball "saisie papillon"',d:'20 sec'}]},
+      {n:'Prise alternée & Ball Slam',s:'4 séries',ex:[{n:'Prise alternée barre 30-35 kg',d:'30 reps'},{n:'Half Kneeling Ball Slam',d:'6 reps (3G / 3D)'}]},
+      {n:'Tractions lestées',s:'3 séries',ex:[{n:'Tractions lestées',d:'8 reps — +40 kg'}]}
     ],
     notes:null,cd:'5 min tapis léger — étirements le soir uniquement'},
   fullbody:{id:'fullbody',title:'Full Body – Puissance',sub:'Arraché · Pliométrie · Med Ball',type:'explo',icon:'💥',inten:4,dur:'90 min',
     wu:['5-10 min cardio (corde, rameur ou vélo)','Mobilisation : épaules, hanches, genoux','1 série légère de chaque mouvement'],
     blocs:[
-      {n:'Bloc 1 – Poussée & Pliométrie',s:'Repos 60-90 sec',ex:[{n:'Développé couché haltères',d:'15 – 12 – 10 – 10 reps @ ~70 % du max'},{n:'Pompes "Beterbiev" explosives',d:'4 × 10 reps'}]},
-      {n:'Bloc 2 – Explosivité Tronc/Hanches',s:'Repos 60-90 sec',ex:[{n:'Arraché à la barre (Snatch)',d:'4 × 4 reps'},{n:'Tours de hanches avec élastique',d:'4 × 8 reps'}]},
-      {n:'Bloc 3 – Jambes & Relance',s:'',ex:[{n:'Back fentes serrées arrière',d:'10 – 10 – 8 – 8 – 6 reps'},{n:'Saut sur box départ genoux',d:'5 × 6 reps'}]},
-      {n:'Bloc 4 – Chaîne postérieure',s:'',ex:[{n:'Good Morning barre légère',d:'12 – 12 – 10 – 10 – 8 reps'},{n:'Arraché Kettlebell alterné',d:'5 × 6 reps'}]},
+      {n:'Bloc 1 – Poussée & Pliométrie',s:'Repos 60-90 sec',ex:[{n:'Développé couché haltères',d:'15 – 12 – 10 – 10 reps — 24 / 26 / 28 / 28 kg par haltère'},{n:'Pompes "Beterbiev" explosives',d:'4 × 10 reps'}]},
+      {n:'Bloc 2 – Explosivité Tronc/Hanches',s:'Repos 60-90 sec',ex:[{n:'Arraché à la barre (Snatch)',d:'4 × 4 reps — 50 kg'},{n:'Tours de hanches avec élastique',d:'4 × 8 reps'}]},
+      {n:'Bloc 3 – Jambes & Relance',s:'',ex:[{n:'Back fentes serrées arrière',d:'10 – 10 – 8 – 8 – 6 reps — départ 60 kg, monter à 80 kg'},{n:'Saut sur box départ genoux',d:'5 × 6 reps'}]},
+      {n:'Bloc 4 – Chaîne postérieure',s:'',ex:[{n:'Good Morning barre légère',d:'12 – 12 – 10 – 10 – 8 reps — 40-60 kg'},{n:'Arraché Kettlebell alterné',d:'5 × 6 reps — KB 20 kg'}]},
       {n:'Bloc 5 – Med Ball (3-4 ex. au choix)',s:'2-3 tours · 30-40 sec/mvt',ex:[{n:'Slam frontal',d:''},{n:'Lancer oblique',d:''},{n:'Lancer arrière au-dessus de la tête',d:''},{n:'Jump squat + slam',d:''}]}
     ],
     notes:'Privilégier la vitesse, pas la charge maximale.',cd:'Mobilité : hanches, ischios, thorax'},
@@ -236,17 +238,17 @@ const S={
   endu5:{id:'endu5',title:'Force Endurance + Circuit Géorgien',sub:'Supersets KB · Circuit Lado.K',type:'endu',icon:'💪',inten:4,dur:'80 min',
     wu:['Échauffement bulgare 2-4 kg','Barre 20 kg pour activation'],
     blocs:[
-      {n:'Force Endurance',s:'4 séries / superset',ex:[{n:'Développé couché KB + Tirages alternés KB',d:'8 + 20 reps'},{n:'Pull-over + Dips lestés',d:'8 + 10 reps'},{n:'Good Morning sumo + Isométrie barre',d:'8 reps + 20 sec'}]},
+      {n:'Force Endurance',s:'4 séries / superset',ex:[{n:'Développé couché KB + Tirages alternés KB',d:'8 + 20 reps — KB 28 kg bench / KB 20 kg tirage'},{n:'Pull-over + Dips lestés',d:'8 + 10 reps — Dips +30 kg'},{n:'Good Morning sumo + Isométrie barre',d:'8 reps 60 kg + 20 sec'}]},
       {n:'Circuit Géorgien – Bloc A',s:'1 à 2 matchs · 6 min/match',ex:[{n:'Élévations épaules pronation',d:'30 sec'},{n:'Développé militaire face',d:'30 sec'},{n:'Tirage pronation',d:'30 sec'},{n:'Tirage bas du dos',d:'30 sec'},{n:'Moulin en pronation',d:'30 sec'},{n:'Élévations épaules pronation (bis)',d:'30 sec'}]},
       {n:'Circuit Géorgien – Bloc B',s:'Après 1 min repos',ex:[{n:'Curl biceps',d:'30 sec'},{n:'Tirage supination',d:'30 sec'},{n:'Développé arrière épaules',d:'30 sec'},{n:'Tirage bas supination',d:'30 sec'},{n:'Moulin',d:'1 min'}]}
     ],
-    notes:'1 match si fatigue élevée, 2 matchs si bonne forme. Barre 20 kg.',cd:null},
+    notes:'1 match si fatigue élevée, 2 matchs si bonne forme. Barre 20 kg pour circuit Géorgien.',cd:null},
   explo3:{id:'explo3',title:'Explosivité – Dos & Coordination',sub:'Rowing · T-Bar · Plyométrie pecs',type:'explo',icon:'🎯',inten:4,dur:'75 min',
     wu:['Mobilisation articulaire générale','Activation dynamique légère'],
     blocs:[
-      {n:'Rowing Alterné & Explosif',s:'5 séries',ex:[{n:'Rowing barre prise alternée',d:'6 reps'},{n:'Rowing explosif départ barre au sol',d:'4 reps'}]},
-      {n:'T-Bar & Kettlebell',s:'5 séries',ex:[{n:'T-Bar entre les jambes',d:'6 reps — mouvement balistique'},{n:'Kettlebell snatch gréco-romaine',d:'6 reps — puissance unilatérale'}]},
-      {n:'Puissance Full Body',s:'5 séries / superset',ex:[{n:'Good Morning 50 % + Bras à la volée',d:'15 + 6 reps'},{n:'Zercher Squat 50 % + Squats sautés genoux',d:'10 + 6 reps'},{n:'Dév militaire 50 % + Squats sautés unilatéraux',d:'10 + 6 reps (3G/3D)'},{n:'Épaulé 70 % sans reposer',d:'8 reps continus'}]},
+      {n:'Rowing Alterné & Explosif',s:'5 séries',ex:[{n:'Rowing barre prise alternée',d:'6 reps — 70 kg'},{n:'Rowing explosif départ barre au sol',d:'4 reps — 60 kg'}]},
+      {n:'T-Bar & Kettlebell',s:'5 séries',ex:[{n:'T-Bar entre les jambes',d:'6 reps — 60 kg balistique'},{n:'Kettlebell snatch gréco-romaine',d:'6 reps — KB 20-24 kg'}]},
+      {n:'Puissance Full Body',s:'5 séries / superset',ex:[{n:'Good Morning 50 % + Bras à la volée',d:'70 kg + 6 reps'},{n:'Zercher Squat 50 % + Squats sautés genoux',d:'55 kg + 6 reps'},{n:'Dév militaire 50 % + Squats sautés unilatéraux',d:'30 kg + 6 reps (3G/3D)'},{n:'Épaulé 70 % sans reposer',d:'8 reps continus — ~60 kg'}]},
       {n:'Coordination & Repérage',s:'',ex:[{n:'Travail de nuque surpassé',d:'4 × 20 reps'},{n:'Rotation complète',d:'3 × 5 reps / côté'},{n:'Lombaires',d:'4 × 30 reps'}]},
       {n:'Plyométrie Pecs & Triceps',s:'2 tours',ex:[{n:'Step-pompes dynamiques',d:'1 min'},{n:'Pompes varan',d:'30 sec'},{n:'Pompes coréennes',d:'15 m A/R'}]}
     ],
@@ -263,18 +265,18 @@ const S={
   endu3:{id:'endu3',title:'Endurance de Force – Circuit',sub:'6 tours barre · Haltères · Tractions',type:'endu',icon:'🔄',inten:4,dur:'70 min',
     wu:['Échauffement bulgare 2-4 kg','Barre 20 kg pour activation'],
     blocs:[
-      {n:'Circuit barre (sans pause)',s:'6 tours',ex:[{n:'Soulevé de terre',d:'10 reps'},{n:'Rowing barre',d:'10 reps'},{n:'Développé militaire',d:'10 reps'},{n:'Back squat',d:'10 reps'},{n:'Good morning',d:'10 reps — charge progressive'}]},
-      {n:'Haltères',s:'4 × 12 reps',ex:[{n:'Toucher sol → lever bras au-dessus de la tête',d:'Contrôle total du mouvement'}]},
+      {n:'Circuit barre (sans pause)',s:'6 tours',ex:[{n:'Soulevé de terre',d:'10 reps'},{n:'Rowing barre',d:'10 reps'},{n:'Développé militaire',d:'10 reps'},{n:'Back squat',d:'10 reps'},{n:'Good morning',d:'10 reps — démarrer à 40 kg (limité par le press), monter par tour'}]},
+      {n:'Haltères',s:'4 × 12 reps',ex:[{n:'Toucher sol → lever bras au-dessus de la tête',d:'Contrôle total du mouvement — 20-24 kg par haltère'}]},
       {n:'Tractions & Dips',s:'3 tours',ex:[{n:'Tractions',d:'15 reps'},{n:'Dips',d:'20 reps'}]}
     ],
-    notes:'1er tour charge légère, augmenter progressivement.',cd:'Récup 2 min après circuit avant haltères'},
+    notes:'Départ 40 kg (limitant : press militaire 10 reps). Augmenter de 5 kg par tour si possible.',cd:'Récup 2 min après circuit avant haltères'},
   grip:{id:'grip',title:'Force & Volume – Grip',sub:'Haut du corps · Poignets · Farmer Walk',type:'force',icon:'✊',inten:3,dur:'60 min',
     wu:['Mobilisation épaules et poignets'],
     blocs:[
       {n:'Activation / Spécifique',s:'',ex:[{n:'Papillon allongé sur la poulie',d:'5 × 20 reps'},{n:'Exercice Khamzat à la poulie',d:'3 × 3 min'}]},
-      {n:'Poussée verticale',s:'',ex:[{n:'Développé militaire assis',d:'20 / 15 / 12 / 12 / 10 reps'}]},
-      {n:'Bas du corps',s:'',ex:[{n:'Double squat bas',d:'5 × 5 reps'},{n:'SDT contre mur',d:'5 × 3 reps'}]},
-      {n:'Poignets & Grip',s:'',ex:[{n:'Haltère band sur barre – travail de poignet',d:'1 min 30'},{n:'Farmer walk',d:'3 A/R (≈ 2 tapis de lutte)'}]}
+      {n:'Poussée verticale',s:'',ex:[{n:'Développé militaire assis',d:'20 / 15 / 12 / 12 / 10 reps — départ 35 kg, finir à 45 kg'}]},
+      {n:'Bas du corps',s:'',ex:[{n:'Double squat bas',d:'5 × 5 reps — 80 kg'},{n:'SDT contre mur',d:'5 × 3 reps — 100 kg'}]},
+      {n:'Poignets & Grip',s:'',ex:[{n:'Haltère band sur barre – travail de poignet',d:'1 min 30 — 5-10 kg'},{n:'Farmer walk',d:'3 A/R (≈ 2 tapis de lutte) — 30 kg par main'}]}
     ],
     notes:null,cd:null},
   plyo:{id:'plyo',title:'Plyométrie Jambes',sub:'Déplacements 25 m · Squat unilatéral',type:'plyo',icon:'🦵',inten:3,dur:'45 min',
@@ -287,18 +289,18 @@ const S={
   deload_force:{id:'deload_force',title:'Force – Décharge',sub:'Technique · 50-60 % des charges · Récupération',type:'force',icon:'🏆',inten:2,dur:'55 min',
     wu:['5 min vélo très léger ou marche','Mobilité : hanches, épaules, thorax — 10 min'],
     blocs:[
-      {n:'Bloc 1',s:'3 tours',ex:[{n:'Soulevé de terre sumo',d:'5 reps @ 50-60 % — focus placement'},{n:'Kettlebell arraché léger',d:'8 reps — contrôle total'}]},
-      {n:'Bloc 2',s:'3 tours',ex:[{n:'Fentes avant',d:'8 reps @ 50 % — amplitude complète'},{n:'Garde Greco isométrie',d:'45 sec — respiration contrôlée'}]},
-      {n:'Bloc 3',s:'3 tours',ex:[{n:'Développé militaire',d:'8 reps @ 50 % — cible ~30 kg'},{n:'Landmine rotation bas',d:'10 reps / côté'}]}
+      {n:'Bloc 1',s:'3 tours',ex:[{n:'Soulevé de terre sumo',d:'5 reps @ 50-60 % — 70-85 kg, focus placement'},{n:'Kettlebell arraché léger',d:'8 reps — KB 12-16 kg'}]},
+      {n:'Bloc 2',s:'3 tours',ex:[{n:'Fentes avant',d:'8 reps @ 50 % — 40-45 kg, amplitude complète'},{n:'Garde Greco isométrie',d:'45 sec — respiration contrôlée'}]},
+      {n:'Bloc 3',s:'3 tours',ex:[{n:'Développé militaire',d:'8 reps @ 50 % — ~30 kg'},{n:'Landmine rotation bas',d:'10 reps / côté'}]}
     ],
     notes:'Semaine de décharge : 50-60 % des charges habituelles. Aucune séance lactique. Priorité récupération et technique.',cd:null},
   deload_explo:{id:'deload_explo',title:'Coordination & Mobilité',sub:'Technique balistique · Propioception · Légèreté',type:'explo',icon:'⚡',inten:2,dur:'50 min',
     wu:['Mobilité articulaire complète : 10 min'],
     blocs:[
-      {n:'Technique',s:'3 séries',ex:[{n:'Soulevé de terre sumo',d:'5 reps @ 50 % — focus dos plat'},{n:'Kettlebell Snatch léger',d:'5 reps / côté — contrôle'}]},
-      {n:'Coordination',s:'3 séries',ex:[{n:'Rowing barre léger',d:'8 reps — amplitude max'},{n:'Med ball pass',d:'8 reps léger'}]},
+      {n:'Technique',s:'3 séries',ex:[{n:'Soulevé de terre sumo',d:'5 reps @ 50 % — 70 kg, focus dos plat'},{n:'Kettlebell Snatch léger',d:'5 reps / côté — KB 12-16 kg'}]},
+      {n:'Coordination',s:'3 séries',ex:[{n:'Rowing barre léger',d:'8 reps — 50 kg, amplitude max'},{n:'Med ball pass',d:'8 reps léger'}]},
       {n:'Plyométrie douce',s:'2 séries',ex:[{n:'Box jump bas, retombée contrôlée',d:'5 reps'},{n:'Déplacements latéraux',d:'30 sec'}]},
-      {n:'Nuque & Lombaires',s:'',ex:[{n:'Travail de nuque 5 kg',d:'3 × 15 reps'},{n:'Good morning très léger',d:'3 × 12 reps'}]}
+      {n:'Nuque & Lombaires',s:'',ex:[{n:'Travail de nuque 5 kg',d:'3 × 15 reps'},{n:'Good morning très léger',d:'3 × 12 reps — 30 kg'}]}
     ],
     notes:'Intensité très basse. Aucun lactique. Récupération active et travail technique.',cd:'Étirements 15 min'}
 };
