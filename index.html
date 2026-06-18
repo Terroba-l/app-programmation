@@ -135,6 +135,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .empty-prog p{font-size:13px;line-height:1.7}
 .fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:20px;cursor:pointer;z-index:100;transition:.2s;box-shadow:0 4px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
 .fab:hover{background:var(--bg4);transform:scale(1.08)}
+.dn-today{color:var(--text)!important}
+.dn-today::after{content:' ●';color:var(--red);font-size:7px;vertical-align:middle}
+.sc-today{border-color:rgba(230,57,70,.45)!important}
+.today-badge{position:absolute;top:9px;right:9px;font-size:8px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);background:rgba(230,57,70,.1);border-radius:100px;padding:2px 7px}
+.date-line{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--dim)}
+.date-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
 </head>
 <body>
@@ -157,6 +164,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button class="wb" id="b3" onclick="sw(3)">Semaine 3</button>
   <button class="wb" id="b4" onclick="sw(4)">Semaine 4</button>
   <button class="wb dl" id="b5" onclick="sw(5)">♥ Décharge</button>
+  <div class="date-line" id="date-line"></div>
 </div>
 <div class="cal" id="cal"></div>
 <div class="ov" id="ov" onclick="close_()"></div>
@@ -411,22 +419,41 @@ function formatLog(entry){
 }
 let _exNames=[];
 let week=1;
+const PROG_START='2026-06-09';
+let todayIdx=-1;
+let currentWeekNum=1;
+function getTodayDayIndex(){const d=new Date().getDay();return d===0?6:d-1;}
+function getCurrentWeek(){
+  const now=new Date();
+  const start=new Date(PROG_START+'T00:00:00');
+  const diff=Math.floor((now-start)/(7*864e5));
+  return Math.min(5,Math.max(1,diff+1));
+}
+function updateDateLine(){
+  const now=new Date();
+  const cw=getCurrentWeek();
+  const dnames=['dim','lun','mar','mer','jeu','ven','sam'];
+  const mnames=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+  const el=document.getElementById('date-line');
+  if(el) el.innerHTML=`<div class="date-dot"></div>Sem. ${cw} &middot; ${dnames[now.getDay()]}. ${now.getDate()} ${mnames[now.getMonth()]}`;
+}
 function getSession(id){return id.indexOf('lutte_')===0?buildLutte(id.slice(6)):S[id];}
-function card(id){
+function card(id,isToday){
+  const tb=isToday?'<div class="today-badge">Aujourd\'hui</div>':'';
   if(id==='rest') return `<div class="rc"><div class="ri">😴</div><div class="rl">Repos</div></div>`;
   if(id==='lutte_lundi'||id==='lutte_mercredi'||id==='lutte_vendredi'){
     const day=id.slice(6);
     const th=LUTTE_THEMES[week];
     const d=th[day];
-    return `<div class="sc lutte_c" onclick="open_('${id}')"><span class="si">🤼</span><div class="sbg" style="background:rgba(14,165,233,.12);color:var(--lutte-c)">Lutte</div><div class="ltheme">${th.theme}</div><div class="st">${d.title}</div><div class="ss">${d.sub}</div><div class="ltechs">Double · Simple glissé · John Smith</div><div class="sf" style="margin-top:auto"><span class="sdur">${d.dur}</span></div></div>`;
+    return `<div class="sc lutte_c${isToday?' sc-today':''}" onclick="open_('${id}')">${tb}<span class="si">🤼</span><div class="sbg" style="background:rgba(14,165,233,.12);color:var(--lutte-c)">Lutte</div><div class="ltheme">${th.theme}</div><div class="st">${d.title}</div><div class="ss">${d.sub}</div><div class="ltechs">Double · Simple glissé · John Smith</div><div class="sf" style="margin-top:auto"><span class="sdur">${d.dur}</span></div></div>`;
   }
-  if(id==='ppg_day') return `<div class="sc ppg_c"><span class="si">🏃</span><div class="sbg" style="background:rgba(163,230,53,.12);color:var(--ppg-c)">PPG</div><div class="st">Prépa Physique Générale</div><div class="ss">Cardio · Mobilité · Gainage</div><div class="sf" style="margin-top:auto"><span class="sdur">~1h</span></div></div>`;
+  if(id==='ppg_day') return `<div class="sc ppg_c${isToday?' sc-today':''}">${tb}<span class="si">🏃</span><div class="sbg" style="background:rgba(163,230,53,.12);color:var(--ppg-c)">PPG</div><div class="st">Prépa Physique Générale</div><div class="ss">Cardio · Mobilité · Gainage</div><div class="sf" style="margin-top:auto"><span class="sdur">~1h</span></div></div>`;
   const s=S[id],t=T[s.type];
   let dd='<div class="dots">';
   for(let i=1;i<=5;i++) dd+=`<div class="dot${i<=s.inten?' on':''}"></div>`;
   dd+='</div>';
-  return `<div class="sc ${s.type}" onclick="open_('${id}')">
-    <span class="si">${s.icon}</span>
+  return `<div class="sc ${s.type}${isToday?' sc-today':''}" onclick="open_('${id}')">
+    ${tb}<span class="si">${s.icon}</span>
     <div class="sbg">${t.l}</div>
     <div class="st">${s.title}</div>
     <div class="ss">${s.sub}</div>
@@ -435,7 +462,7 @@ function card(id){
 }
 function render(){
   document.getElementById('cal').innerHTML=
-    DAYS.map((d,i)=>`<div class="dc"><div class="dn">${d}</div>${card(WEEKS[week][i])}</div>`).join('');
+    DAYS.map((d,i)=>`<div class="dc"><div class="dn${i===todayIdx?' dn-today':''}">${d}</div>${card(WEEKS[week][i],i===todayIdx&&week===currentWeekNum)}</div>`).join('');
 }
 function sw(n){
   week=n;
@@ -570,7 +597,10 @@ function deleteLogs(name){
   }
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){close_();closeProgress();}});
-render();
+currentWeekNum=getCurrentWeek();
+todayIdx=getTodayDayIndex();
+sw(currentWeekNum);
+updateDateLine();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
