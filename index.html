@@ -114,11 +114,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ll em{font-style:normal;color:var(--dim2)}
 .pm{position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto;transform:translateY(100%);transition:.32s transform cubic-bezier(.4,0,.2,1)}
 .pm.open{transform:translateY(0)}
-.pm-hdr{padding:26px 24px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:var(--bg);z-index:1}
-.pm-tit{font-size:20px;font-weight:900;flex:1}
+.pm-hdr{padding:20px 24px 0;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1}
+.pm-hdr-row{display:flex;align-items:center;gap:10px;padding-bottom:14px}
+.pm-tit{font-size:18px;font-weight:900;flex:1}
 .pm-body{max-width:700px;margin:0 auto;padding:20px 24px 100px}
+.pm-tabs{display:flex;border-bottom:1px solid var(--border)}
+.pm-tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:700;color:var(--dim);cursor:pointer;transition:.15s;border-bottom:2px solid transparent;margin-bottom:-1px}
+.pm-tab.on{color:var(--text);border-bottom-color:var(--red)}
+.pm-tab:hover:not(.on){color:rgba(236,236,244,.7)}
+.export-btn{background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--dim);font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;transition:.15s;white-space:nowrap}
+.export-btn:hover{border-color:var(--border2);color:var(--text)}
 .exr{background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden}
-.exr-hd{display:flex;align-items:flex-start;padding:14px 16px;cursor:pointer;gap:10px}
+.exr-hd{display:flex;align-items:center;padding:14px 16px;cursor:pointer;gap:10px}
 .exr:hover .exr-hd{background:rgba(255,255,255,.02)}
 .exr-n{font-size:13px;font-weight:700;flex:1}
 .exr-meta{font-size:11px;color:var(--dim);text-align:right;flex-shrink:0}
@@ -142,6 +149,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .date-line{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--dim)}
 .date-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.dash-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 12px}
+.dash-val{font-size:22px;font-weight:900;color:var(--text);line-height:1}
+.dash-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:4px}
+.ex-dash{background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;padding:13px 14px}
+.ex-dash-row{display:flex;align-items:center;gap:10px}
+.ex-dash-name{font-size:12px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ex-dash-pr{text-align:right;flex-shrink:0}
+.ex-dash-prval{font-size:18px;font-weight:900;color:var(--text);line-height:1}
+.ex-dash-prlbl{font-size:8px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--dim)}
+.vol-section{margin-bottom:20px}
+.vol-lbl{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.spark{display:block;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -174,8 +194,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 <div class="pm" id="pm">
   <div class="pm-hdr">
-    <button class="pc" onclick="closeProgress()">✕</button>
-    <div class="pm-tit">Progression des charges</div>
+    <div class="pm-hdr-row">
+      <button class="pc" style="margin-bottom:0" onclick="closeProgress()">✕</button>
+      <div class="pm-tit">Progression</div>
+      <button class="export-btn" onclick="exportLogs()">⬇ Export</button>
+    </div>
+    <div class="pm-tabs">
+      <div class="pm-tab on" id="tab-hist" onclick="switchTab('hist')">Historique</div>
+      <div class="pm-tab" id="tab-dash" onclick="switchTab('dash')">Dashboard</div>
+    </div>
   </div>
   <div class="pm-body" id="pm-body"></div>
 </div>
@@ -543,42 +570,147 @@ function close_(){
   document.getElementById('pnl').classList.remove('open');
   document.body.style.overflow='';
 }
-function openProgress(){
-  const names=Object.keys(LOGS).filter(k=>LOGS[k]&&LOGS[k].length);
-  names.sort((a,b)=>{
-    const la=LOGS[a][LOGS[a].length-1].date;
-    const lb=LOGS[b][LOGS[b].length-1].date;
-    return lb.localeCompare(la);
+function sparkline(entries,w,h){
+  w=w||72;h=h||28;
+  const wts=entries.map(e=>e.weight).filter(Boolean);
+  if(wts.length<2) return `<svg width="${w}" height="${h}" class="spark">${wts.length?`<circle cx="${w/2}" cy="${h/2}" r="2.5" fill="rgba(124,92,252,.6)"/>`:''}` +'</svg>';
+  const mn=Math.min(...wts),mx=Math.max(...wts),range=mx-mn||1,n=wts.length,pad=4;
+  const pts=wts.map((v,i)=>{
+    const x=pad+(i/(n-1))*(w-2*pad);
+    const y=h-pad-((v-mn)/range)*(h-2*pad);
+    return x.toFixed(1)+','+y.toFixed(1);
+  }).join(' ');
+  const last=wts[n-1],first=wts[0];
+  const col=last>first?'#30d158':last<first?'#e63946':'#7c5cfc';
+  const lp=pts.split(' ').pop().split(',');
+  return `<svg width="${w}" height="${h}" class="spark"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/><circle cx="${lp[0]}" cy="${lp[1]}" r="2.5" fill="${col}"/></svg>`;
+}
+function getPR(name){
+  const logs=LOGS[name];if(!logs) return null;
+  const wts=logs.map(e=>e.weight).filter(Boolean);
+  return wts.length?Math.max(...wts):null;
+}
+function weeklyVolume(){
+  const b=[{l:'S-4',v:0},{l:'S-3',v:0},{l:'S-2',v:0},{l:'S-1',v:0},{l:'Cette s.',v:0}];
+  const now=new Date();now.setHours(23,59,59,999);
+  Object.values(LOGS).forEach(entries=>entries.forEach(e=>{
+    if(!e.weight||!e.reps) return;
+    const d=new Date(e.date+'T00:00:00');
+    const wi=4-Math.floor((now-d)/864e5/7);
+    if(wi>=0&&wi<=4) b[wi].v+=e.weight*e.reps;
+  }));
+  return b;
+}
+function volChart(weeks){
+  const mx=Math.max(...weeks.map(w=>w.v),1),H=70,pad=8,gap=5,VW=260;
+  const bw=(VW-pad*2-gap*(weeks.length-1))/weeks.length;
+  let s=`<svg viewBox="0 0 ${VW} ${H+18}" style="width:100%;display:block">`;
+  weeks.forEach((w,i)=>{
+    const x=pad+i*(bw+gap),bh=w.v>0?Math.max(4,(w.v/mx)*H):0,y=H-bh;
+    const fill=i===weeks.length-1?'rgba(230,57,70,.7)':'rgba(124,92,252,.45)';
+    if(bh>0){
+      s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="${fill}"/>`;
+      if(bh>14) s+=`<text x="${(x+bw/2).toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle" font-size="8" fill="rgba(236,236,244,.45)">${w.v>=1000?(w.v/1000).toFixed(1)+'k':w.v}</text>`;
+    }
+    s+=`<text x="${(x+bw/2).toFixed(1)}" y="${(H+13).toFixed(1)}" text-anchor="middle" font-size="8" fill="rgba(236,236,244,.35)">${w.l}</text>`;
   });
+  return s+'</svg>';
+}
+function renderHistory(){
+  const names=Object.keys(LOGS).filter(k=>LOGS[k]&&LOGS[k].length);
+  if(!names.length) return `<div class="empty-prog"><div class="ep-i">📊</div><p>Aucune charge enregistrée pour l'instant.<br>Ouvre une séance et utilise les boutons<br><strong>+ Log</strong> sur chaque exercice.</p></div>`;
+  names.sort((a,b)=>LOGS[b][LOGS[b].length-1].date.localeCompare(LOGS[a][LOGS[a].length-1].date));
   let html='';
-  if(!names.length){
-    html=`<div class="empty-prog"><div class="ep-i">📊</div><p>Aucune charge enregistrée pour l'instant.<br>Ouvre une séance et utilise les boutons<br><strong>+ Log</strong> sur chaque exercice.</p></div>`;
-  } else {
-    names.forEach((name,i)=>{
-      const entries=LOGS[name];
-      const last=entries[entries.length-1];
-      const prev=entries.length>1?entries[entries.length-2]:null;
-      let trend='';
-      if(prev&&last.weight&&prev.weight){
-        if(last.weight>prev.weight) trend=' <span class="tu">↑</span>';
-        else if(last.weight<prev.weight) trend=' <span class="td">↓</span>';
-        else trend=' <span class="tf">→</span>';
-      }
-      const safeN=name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-      html+=`<div class="exr">
-        <div class="exr-hd" onclick="toggleExDet(${i})">
-          <div class="exr-n">${name}${trend}</div>
-          <div class="exr-meta">${formatLog(last)}<br><span style="color:var(--dim2)">${entries.length} entrée${entries.length>1?'s':''}</span></div>
-        </div>
-        <div class="exr-det" id="exdet${i}">
-          <div class="hrow hrow-hd"><span>Date</span><span>Charge</span><span>Reps</span><span>Note</span></div>
-          ${entries.slice().reverse().map(e=>`<div class="hrow"><span style="color:var(--dim)">${e.date}</span><span>${e.weight?e.weight+'kg':'—'}</span><span>${e.reps||'—'}</span><span style="color:var(--dim2)">${e.note||''}</span></div>`).join('')}
-          <button class="delbtn" onclick="deleteLogs('${safeN}')">Supprimer l'historique</button>
-        </div>
-      </div>`;
-    });
+  names.forEach((name,i)=>{
+    const entries=LOGS[name];
+    const last=entries[entries.length-1];
+    const prev=entries.length>1?entries[entries.length-2]:null;
+    let trend='';
+    if(prev&&last.weight&&prev.weight){
+      if(last.weight>prev.weight) trend=' <span class="tu">↑</span>';
+      else if(last.weight<prev.weight) trend=' <span class="td">↓</span>';
+      else trend=' <span class="tf">→</span>';
+    }
+    const wE=entries.filter(e=>e.weight);
+    const spark=wE.length>=2?sparkline(wE):'';
+    const safeN=name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    html+=`<div class="exr">
+      <div class="exr-hd" onclick="toggleExDet(${i})">
+        <div class="exr-n">${name}${trend}</div>
+        ${spark}
+        <div class="exr-meta">${formatLog(last)}<br><span style="color:var(--dim2)">${entries.length} entrée${entries.length>1?'s':''}</span></div>
+      </div>
+      <div class="exr-det" id="exdet${i}">
+        <div class="hrow hrow-hd"><span>Date</span><span>Charge</span><span>Reps</span><span>Note</span></div>
+        ${entries.slice().reverse().map(e=>`<div class="hrow"><span style="color:var(--dim)">${e.date}</span><span>${e.weight?e.weight+'kg':'—'}</span><span>${e.reps||'—'}</span><span style="color:var(--dim2)">${e.note||''}</span></div>`).join('')}
+        <button class="delbtn" onclick="deleteLogs('${safeN}')">Supprimer l'historique</button>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+function renderDashboard(){
+  const names=Object.keys(LOGS).filter(k=>LOGS[k]&&LOGS[k].length);
+  if(!names.length) return `<div class="empty-prog"><div class="ep-i">📈</div><p>Commence à logger tes charges<br>pour voir ta progression ici.</p></div>`;
+  const totalLogs=names.reduce((s,n)=>s+LOGS[n].length,0);
+  const prs=names.map(n=>getPR(n)).filter(Boolean);
+  const maxPR=prs.length?Math.max(...prs):0;
+  const trending=names.filter(n=>{const w=LOGS[n].filter(e=>e.weight);return w.length>=2&&w[w.length-1].weight>w[0].weight;}).length;
+  let html=`<div class="dash-grid">
+    <div class="dash-card"><div class="dash-val">${names.length}</div><div class="dash-lbl">Exercices</div></div>
+    <div class="dash-card"><div class="dash-val">${totalLogs}</div><div class="dash-lbl">Logs</div></div>
+    <div class="dash-card"><div class="dash-val" style="color:var(--plyo)">${trending}</div><div class="dash-lbl">En progression</div></div>
+  </div>`;
+  const weeks=weeklyVolume();
+  if(weeks.some(w=>w.v>0)){
+    html+=`<div class="vol-section"><div class="vol-lbl">Volume kg×reps / semaine</div>${volChart(weeks)}</div>`;
   }
-  document.getElementById('pm-body').innerHTML=html;
+  html+=`<div class="slbl" style="margin-bottom:12px">Records & Courbes</div>`;
+  names.sort((a,b)=>LOGS[b][LOGS[b].length-1].date.localeCompare(LOGS[a][LOGS[a].length-1].date));
+  names.forEach(name=>{
+    const entries=LOGS[name];
+    const pr=getPR(name);
+    const wE=entries.filter(e=>e.weight);
+    const spark=wE.length>=2?sparkline(wE,84,32):'';
+    const n=wE.length;
+    let progress='';
+    if(n>=2){
+      const diff=(wE[n-1].weight-wE[0].weight).toFixed(1);
+      if(diff>0) progress=`<span style="color:var(--plyo);font-size:10px">+${diff}kg depuis début</span>`;
+      else if(diff<0) progress=`<span style="color:var(--lact);font-size:10px">${diff}kg depuis début</span>`;
+    }
+    html+=`<div class="ex-dash">
+      <div class="ex-dash-row">
+        <div class="ex-dash-name">${name}</div>
+        ${spark}
+        <div class="ex-dash-pr">${pr?`<div class="ex-dash-prval">${pr}kg</div><div class="ex-dash-prlbl">PR</div>`:`<div class="ex-dash-prlbl" style="color:var(--dim2)">—</div>`}</div>
+      </div>
+      ${progress?`<div style="margin-top:6px">${progress}</div>`:''}
+    </div>`;
+  });
+  return html;
+}
+let pmTab='hist';
+function switchTab(t){
+  pmTab=t;
+  document.getElementById('tab-hist').classList.toggle('on',t==='hist');
+  document.getElementById('tab-dash').classList.toggle('on',t==='dash');
+  document.getElementById('pm-body').innerHTML=t==='hist'?renderHistory():renderDashboard();
+}
+function exportLogs(){
+  if(!Object.keys(LOGS).length){alert('Aucune donnée à exporter.');return;}
+  const blob=new Blob([JSON.stringify(LOGS,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='lutte_logs_'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function openProgress(){
+  pmTab='hist';
+  document.getElementById('tab-hist').classList.add('on');
+  document.getElementById('tab-dash').classList.remove('on');
+  document.getElementById('pm-body').innerHTML=renderHistory();
   document.getElementById('pm').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -593,7 +725,7 @@ function deleteLogs(name){
   if(confirm('Supprimer tout l\'historique de "'+name+'" ?')){
     delete LOGS[name];
     saveLogs();
-    openProgress();
+    document.getElementById('pm-body').innerHTML=pmTab==='dash'?renderDashboard():renderHistory();
   }
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){close_();closeProgress();}});
