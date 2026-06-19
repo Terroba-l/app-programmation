@@ -93,7 +93,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bser{font-size:10px;font-weight:700;color:var(--dim);background:var(--bg4);border-radius:100px;padding:2px 8px}
 .brest{font-size:10px;font-weight:700;color:#ffcf70;background:rgba(255,159,10,.12);border-radius:100px;padding:2px 8px;white-space:nowrap}
 .exl{display:flex;flex-direction:column;gap:4px;padding-left:33px}
-.ex{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px}
+.ex{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;gap:10px;align-items:flex-start}
+.ex-ico{width:36px;height:36px;border-radius:9px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1px solid var(--border)}
+.ex-body{flex:1;min-width:0}
 .en{font-size:12.5px;font-weight:700;line-height:1.3}
 .ed{font-size:11px;color:var(--dim);margin-top:2px;line-height:1.4}
 .nbox{background:linear-gradient(135deg,rgba(124,92,252,.08),rgba(230,57,70,.08));border:1px solid rgba(124,92,252,.16);border-radius:11px;padding:13px 15px;margin-top:18px}
@@ -464,6 +466,43 @@ function updateDateLine(){
   const el=document.getElementById('date-line');
   if(el) el.innerHTML=`<div class="date-dot"></div>Sem. ${cw} &middot; ${dnames[now.getDay()]}. ${now.getDate()} ${mnames[now.getMonth()]}`;
 }
+function exIcon(name){
+  const n=name.toLowerCase();
+  if(/soulevé de terre|sdt/.test(n)) return '🏋️';
+  if(/arraché|snatch/.test(n)) return '⚡';
+  if(/zercher/.test(n)) return '🏋️';
+  if(/développé couché|bench/.test(n)) return '🫷';
+  if(/développé militaire|press militaire/.test(n)) return '🙌';
+  if(/développé/.test(n)) return '💪';
+  if(/fente|lunge/.test(n)) return '🦵';
+  if(/squat|double squat/.test(n)) return '🏋️';
+  if(/traction|pull-over/.test(n)) return '🔝';
+  if(/dip/.test(n)) return '🤸';
+  if(/rowing|tirage/.test(n)) return '🚣';
+  if(/sprint|tapis de course|course|400 m|piste/.test(n)) return '🏃';
+  if(/vélo|assault bike|bike/.test(n)) return '🚴';
+  if(/kettlebell|kb/.test(n)) return '🔔';
+  if(/saut|jump|box jump|bond/.test(n)) return '⬆️';
+  if(/pompe/.test(n)) return '🤸';
+  if(/med ball|medicine ball|slam|lancer/.test(n)) return '⚾';
+  if(/rotation|moulin|twist/.test(n)) return '🔄';
+  if(/farmer walk/.test(n)) return '🧳';
+  if(/marche en garde/.test(n)) return '🚶';
+  if(/nuque/.test(n)) return '🦒';
+  if(/lombaire|gainage/.test(n)) return '🧱';
+  if(/good morning/.test(n)) return '🌅';
+  if(/garde|greco|isométr/.test(n)) return '🤼';
+  if(/mobilité|étirement/.test(n)) return '🧘';
+  if(/papillon/.test(n)) return '🦋';
+  if(/curl|bicep/.test(n)) return '💪';
+  if(/décéléra/.test(n)) return '🛑';
+  if(/cardio|vélo|rameur|corde/.test(n)) return '🚴';
+  if(/drill|technique|décompos/.test(n)) return '🎯';
+  if(/combat|lutte|match/.test(n)) return '🤼';
+  if(/pénétration|attaque|situation/.test(n)) return '⚔️';
+  if(/enchaînement|transition/.test(n)) return '🔗';
+  return '🏅';
+}
 function getSession(id){return id.indexOf('lutte_')===0?buildLutte(id.slice(6)):S[id];}
 function card(id,isToday){
   const tb=isToday?'<div class="today-badge">Aujourd\'hui</div>':'';
@@ -539,15 +578,18 @@ function open_(id){
       _exNames.push(e.n);
       const last=getLastLog(e.n);
       exHtml+=`<div class="ex">
-        <div class="en">${e.n}</div>
-        ${e.d?`<div class="ed">${e.d}</div>`:''}
-        <span class="ll" id="llast${idx}">${last?formatLog(last):''}</span>
-        <button class="lbtn" onclick="toggleLog(${idx})">+ Log</button>
-        <div class="lf" id="lf${idx}">
-          <input class="li" id="lw${idx}" type="number" placeholder="kg" step="0.5">
-          <input class="li" id="lr${idx}" type="number" placeholder="reps">
-          <input class="li wide" id="ln${idx}" type="text" placeholder="note…">
-          <button class="lsave" onclick="saveLog(${idx})">✓</button>
+        <div class="ex-ico">${exIcon(e.n)}</div>
+        <div class="ex-body">
+          <div class="en">${e.n}</div>
+          ${e.d?`<div class="ed">${e.d}</div>`:''}
+          <span class="ll" id="llast${idx}">${last?formatLog(last):''}</span>
+          <button class="lbtn" onclick="toggleLog(${idx})">+ Log</button>
+          <div class="lf" id="lf${idx}">
+            <input class="li" id="lw${idx}" type="number" placeholder="kg" step="0.5">
+            <input class="li" id="lr${idx}" type="number" placeholder="reps">
+            <input class="li wide" id="ln${idx}" type="text" placeholder="note…">
+            <button class="lsave" onclick="saveLog(${idx})">✓</button>
+          </div>
         </div>
       </div>`;
     });
