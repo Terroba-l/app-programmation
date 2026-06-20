@@ -484,23 +484,66 @@ function updateDateLine(){
   const el=document.getElementById('date-line');
   if(el) el.innerHTML=`<div class="date-dot"></div>Sem. ${cw} &middot; ${dnames[now.getDay()]}. ${now.getDate()} ${mnames[now.getMonth()]}`;
 }
-// Illustrations / photos d'exécution. Clé = sous-chaîne du nom d'exercice (1er match retenu).
+// Illustrations / photos par exercice. Clé = sous-chaîne du nom (1er match retenu, ordre = priorité).
+// Fichiers 'ill_*' = illustrations Everkinetic (CC BY-SA 4.0) ; .jpg = photos de la fiche FORCE 2.
 const EX_IMG={
-  // Photos d'exécution issues de la fiche FORCE 2
-  'tirage front':{src:'img/tirage_front.jpg',type:'Illustration · fiche'},
-  'zercher sur chaise':{src:'img/zercher.jpg',type:'Photo · exécution'},
-  'sdt barre':{src:'img/sdt_azeri.jpg',type:'Photo · SDT Azeri'},
-  'tirage rowing':{src:'img/rowing.jpg',type:'Photo · exécution'},
-  // Illustrations génériques pour les mouvements moins connus — Everkinetic, CC BY-SA 4.0
-  't-bar':{src:'img/ill_tbar.png',type:'Illustration · Everkinetic (CC BY-SA)'},
-  'pull-over':{src:'img/ill_pullover.png',type:'Illustration · Everkinetic (CC BY-SA)'},
-  'good morning':{src:'img/ill_goodmorning.png',type:'Illustration · Everkinetic (CC BY-SA)'},
-  'arraché':{src:'img/ill_snatch.png',type:'Illustration · Everkinetic (CC BY-SA)'},
-  'snatch':{src:'img/ill_snatch.png',type:'Illustration · Everkinetic (CC BY-SA)'}
+  // — Photos d'exécution (fiche FORCE 2), prioritaires —
+  'tirage front':'tirage_front.jpg',
+  'tirage rowing':'rowing.jpg',
+  'zercher sur chaise':'zercher.jpg',
+  'sdt barre':'sdt_azeri.jpg',
+  // — Squats —
+  'zercher squat':'ill_zercher_squat.png',
+  'back squat':'ill_squat.png',
+  'double squat':'ill_squat.png',
+  'squat sur une jambe':'ill_squat_1leg.png',
+  // — Fentes —
+  'fentes avant':'ill_lunge.png',
+  'fentes arrière':'ill_lunge_back.png',
+  'back fentes':'ill_lunge_back.png',
+  // — Charnière de hanche —
+  'soulevé de terre':'ill_deadlift.png',
+  'sdt contre mur':'ill_deadlift.png',
+  'good morning':'ill_goodmorning.png',
+  // — Développés horizontaux (spécifique avant générique) —
+  'développé couché au sol':'ill_floor_press.png',
+  'développé couché sol':'ill_floor_press.png',
+  'développé couché':'ill_db_bench.png',
+  // — Développés verticaux —
+  'développé militaire':'ill_military.png',
+  'dév militaire':'ill_military.png',
+  'développé arrière épaules':'ill_press_behind.png',
+  'développé par-dessus':'ill_military.png',
+  // — Tirages / rowings / tractions —
+  't-bar':'ill_tbar.png',
+  'rowing':'ill_row.png',
+  'prise alternée barre':'ill_deadlift.png',
+  'tirage câble':'ill_cable_row.png',
+  'tractions australiennes':'ill_inverted_row.png',
+  'tractions':'ill_pullup.png',
+  'pull-over':'ill_pullover.png',
+  'tirage':'ill_cable_row.png',
+  // — Arraché / snatch —
+  'arraché':'ill_snatch.png',
+  'snatch':'ill_snatch.png',
+  // — Dips / curl / élévations —
+  'dips':'ill_dips.png',
+  'curl':'ill_curl.png',
+  'élévations épaules':'ill_lat_raise.png',
+  // — Gainage / nuque / pompes —
+  'lombaires':'ill_hyperext.png',
+  'travail de nuque':'ill_neck.png',
+  'pompes':'ill_pushup.png'
 };
 function exImg(name){
   const n=name.toLowerCase();
-  for(const k in EX_IMG){if(n.indexOf(k)>=0) return EX_IMG[k];}
+  for(const k in EX_IMG){
+    if(n.indexOf(k)>=0){
+      const f=EX_IMG[k],ill=f.indexOf('ill_')===0;
+      const type=ill?'Illustration · Everkinetic (CC BY-SA)':(f==='tirage_front.jpg'?'Illustration · fiche':'Photo · fiche');
+      return {src:'img/'+f,type:type};
+    }
+  }
   return null;
 }
 function exIcon(name){
