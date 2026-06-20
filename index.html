@@ -97,6 +97,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ex-ico{width:36px;height:36px;border-radius:9px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1px solid var(--border)}
 .ex-ico.shot{padding:0;overflow:hidden;position:relative;cursor:zoom-in;border-color:var(--border2)}
 .ex-ico.shot img{width:100%;height:100%;object-fit:cover;display:block}
+.ex-ico.shot.ill{background:#fff}
+.ex-ico.shot.ill img{object-position:left center}
 .ex-ico.shot::after{content:'⤢';position:absolute;right:0;bottom:0;font-size:8px;line-height:1.3;color:#fff;background:rgba(0,0,0,.6);border-radius:5px 0 6px 0;padding:0 3px}
 .ex-body{flex:1;min-width:0}
 .en{font-size:12.5px;font-weight:700;line-height:1.3}
@@ -482,12 +484,19 @@ function updateDateLine(){
   const el=document.getElementById('date-line');
   if(el) el.innerHTML=`<div class="date-dot"></div>Sem. ${cw} &middot; ${dnames[now.getDay()]}. ${now.getDate()} ${mnames[now.getMonth()]}`;
 }
-// Illustrations / photos d'exécution (issues des fiches PDF). Clé = sous-chaîne du nom d'exercice.
+// Illustrations / photos d'exécution. Clé = sous-chaîne du nom d'exercice (1er match retenu).
 const EX_IMG={
-  'tirage front':{src:'img/tirage_front.jpg',type:'Illustration'},
+  // Photos d'exécution issues de la fiche FORCE 2
+  'tirage front':{src:'img/tirage_front.jpg',type:'Illustration · fiche'},
   'zercher sur chaise':{src:'img/zercher.jpg',type:'Photo · exécution'},
   'sdt barre':{src:'img/sdt_azeri.jpg',type:'Photo · SDT Azeri'},
-  'tirage rowing':{src:'img/rowing.jpg',type:'Photo · exécution'}
+  'tirage rowing':{src:'img/rowing.jpg',type:'Photo · exécution'},
+  // Illustrations génériques pour les mouvements moins connus — Everkinetic, CC BY-SA 4.0
+  't-bar':{src:'img/ill_tbar.png',type:'Illustration · Everkinetic (CC BY-SA)'},
+  'pull-over':{src:'img/ill_pullover.png',type:'Illustration · Everkinetic (CC BY-SA)'},
+  'good morning':{src:'img/ill_goodmorning.png',type:'Illustration · Everkinetic (CC BY-SA)'},
+  'arraché':{src:'img/ill_snatch.png',type:'Illustration · Everkinetic (CC BY-SA)'},
+  'snatch':{src:'img/ill_snatch.png',type:'Illustration · Everkinetic (CC BY-SA)'}
 };
 function exImg(name){
   const n=name.toLowerCase();
@@ -608,7 +617,7 @@ function open_(id){
       const im=exImg(e.n);
       const cap=e.n.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
       const icoCell=im
-        ? `<div class="ex-ico shot" onclick="openShot('${im.src}','${cap}','${im.type}')"><img src="${im.src}" loading="lazy" alt="${e.n}"></div>`
+        ? `<div class="ex-ico shot${im.src.indexOf('ill_')>=0?' ill':''}" onclick="openShot('${im.src}','${cap}','${im.type}')"><img src="${im.src}" loading="lazy" alt="${e.n}"></div>`
         : `<div class="ex-ico">${exIcon(e.n)}</div>`;
       exHtml+=`<div class="ex">
         ${icoCell}
