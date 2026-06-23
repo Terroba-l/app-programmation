@@ -176,6 +176,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .lb-sub{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
 .lb-x{position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid var(--border2);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .lb-x:hover{background:rgba(255,255,255,.2)}
+.tmr-step{font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim)}
+.tmr-name{font-size:20px;font-weight:800;color:#fff;text-align:center;max-width:300px;line-height:1.3}
+.tmr-ring{position:relative;width:200px;height:200px;flex-shrink:0}
+.tmr-ring svg{transform:rotate(-90deg)}
+.tmr-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:10}
+.tmr-fg{fill:none;stroke:#7c5cfc;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .95s linear}
+.tmr-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:900;color:#fff;letter-spacing:-2px}
+.tmr-next{font-size:13px;color:var(--dim);text-align:center;min-height:20px}
+.tmr-btn{border:none;border-radius:50px;padding:12px 24px;font-size:14px;font-weight:800;cursor:pointer}
+.tmr-pause{background:rgba(255,255,255,.1);color:#fff}
+.tmr-stop{background:rgba(230,57,70,.15);color:var(--lact)}
+.blaunch{margin-left:auto;background:none;border:1px solid currentColor;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.02em;transition:.15s opacity;flex-shrink:0}
+.blaunch:hover{opacity:.65}
 </style>
 </head>
 <body>
@@ -225,6 +238,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <img id="lb-img" src="" alt="">
   <div class="lb-cap" id="lb-cap"></div>
   <div class="lb-sub" id="lb-sub"></div>
+</div>
+<div id="tmr-ov" style="display:none;position:fixed;inset:0;background:rgba(7,7,15,.97);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px">
+  <button class="lb-x" onclick="stopTimer()">✕</button>
+  <div id="tmr-step" class="tmr-step"></div>
+  <div id="tmr-name" class="tmr-name"></div>
+  <div class="tmr-ring">
+    <svg width="200" height="200" viewBox="0 0 200 200"><circle class="tmr-bg" cx="100" cy="100" r="85"/><circle id="tmr-fg" class="tmr-fg" cx="100" cy="100" r="85"/></svg>
+    <div id="tmr-num" class="tmr-num"></div>
+  </div>
+  <div id="tmr-next" class="tmr-next"></div>
+  <div style="display:flex;gap:12px;margin-top:8px">
+    <button id="tmr-pause" class="tmr-btn tmr-pause" onclick="pauseTimer()">⏸ Pause</button>
+    <button class="tmr-btn tmr-stop" onclick="stopTimer()">✕ Arrêter</button>
+  </div>
 </div>
 <button class="fab" onclick="openProgress()" title="Voir la progression">📊</button>
 <script>
@@ -678,11 +705,13 @@ function open_(id){
         </div>
       </div>`;
     });
+    const _circ=isCircuit(bl);
     b+=`<div class="bloc"><div class="bh">
       <div class="bn" style="background:${t.c}">${i+1}</div>
       <div class="bname">${bl.n}</div>
       ${bl.s?`<div class="bser">${bl.s}</div>`:''}
       ${bl.rest?`<div class="brest">⏱ repos ${bl.rest}</div>`:''}
+      ${_circ?`<button class="blaunch" style="color:${t.c};border-color:${t.c}" onclick="launchCircuit(${i},'${s.id}')">▶ Chrono</button>`:''}
     </div><div class="exl">${exHtml}</div></div>`;
   });
   if(s.notes) b+=`<div class="nbox"><div class="ntit">Notes & Conseils</div><div class="ntxt">${s.notes}</div></div>`;
@@ -865,7 +894,85 @@ function closeShot(e){
   if(e&&e.target&&e.target.id==='lb-img') return;
   document.getElementById('lb').classList.remove('open');
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeShot();close_();closeProgress();}});
+function parseDur(d){
+  if(!d) return null;
+  const s=d.toLowerCase();
+  const m=s.match(/^(\d+)\s*min/);
+  if(m){const v=parseInt(m[1])*60;return v<=600?v:null;}
+  const m2=s.match(/^(\d+)\s*sec/);
+  if(m2) return parseInt(m2[1]);
+  return null;
+}
+function isCircuit(bl){return bl.ex.filter(e=>parseDur(e.d)!==null).length>=2;}
+const _C=2*Math.PI*85;
+let _tmr={iv:null,paused:false,exs:[],idx:0,total:0,rem:0};
+function launchCircuit(blIdx,sid){
+  const bl=S[sid].blocs[blIdx];
+  const exs=bl.ex.filter(e=>parseDur(e.d)!==null).map(e=>({n:e.n,dur:parseDur(e.d)}));
+  if(!exs.length) return;
+  clearInterval(_tmr.iv);
+  _tmr={iv:null,paused:false,exs,idx:0,total:exs[0].dur,rem:exs[0].dur};
+  document.getElementById('tmr-ov').style.display='flex';
+  _tmrRender();
+  _tmrTick();
+}
+function _tmrRender(){
+  const ex=_tmr.exs[_tmr.idx];
+  const next=_tmr.exs[_tmr.idx+1];
+  const r=_tmr.rem;
+  document.getElementById('tmr-step').textContent=(_tmr.idx+1)+' / '+_tmr.exs.length;
+  document.getElementById('tmr-name').textContent=ex.n;
+  document.getElementById('tmr-num').textContent=r>60?Math.floor(r/60)+'m'+String(r%60).padStart(2,'0'):r;
+  document.getElementById('tmr-next').textContent=next?'Suivant : '+next.n:'Dernier exercice';
+  const fg=document.getElementById('tmr-fg');
+  fg.style.strokeDasharray=_C;
+  fg.style.strokeDashoffset=_C*(1-r/_tmr.total);
+}
+function _tmrTick(){
+  _tmr.iv=setInterval(()=>{
+    if(_tmr.paused) return;
+    _tmr.rem--;
+    _tmrRender();
+    if(_tmr.rem>0) return;
+    clearInterval(_tmr.iv);
+    _beep();
+    const ni=_tmr.idx+1;
+    if(ni<_tmr.exs.length){
+      _tmr.idx=ni;_tmr.total=_tmr.exs[ni].dur;_tmr.rem=_tmr.exs[ni].dur;
+      setTimeout(()=>{_tmrRender();_tmrTick();},1200);
+    } else {
+      document.getElementById('tmr-num').textContent='✓';
+      document.getElementById('tmr-name').textContent='Circuit terminé !';
+      document.getElementById('tmr-next').textContent='';
+      setTimeout(stopTimer,2000);
+    }
+  },1000);
+}
+function pauseTimer(){
+  _tmr.paused=!_tmr.paused;
+  document.getElementById('tmr-pause').textContent=_tmr.paused?'▶ Reprendre':'⏸ Pause';
+}
+function stopTimer(){
+  clearInterval(_tmr.iv);
+  _tmr.paused=false;
+  document.getElementById('tmr-ov').style.display='none';
+  document.getElementById('tmr-pause').textContent='⏸ Pause';
+}
+function _beep(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [0,.15,.3].forEach((t,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=i===2?1320:880;
+      g.gain.setValueAtTime(.25,ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.18);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.2);
+    });
+  }catch(e){}
+  if(navigator.vibrate) navigator.vibrate([100,50,100]);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeShot();close_();closeProgress();stopTimer();}});
 currentWeekNum=getCurrentWeek();
 todayIdx=getTodayDayIndex();
 sw(currentWeekNum);
