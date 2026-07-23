@@ -1,4 +1,4 @@
-const CACHE = 'lutte-prog-v17';
+const CACHE = 'lutte-prog-v18';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 const EXTRA = ['./img/ill_cable_row.png', './img/ill_curl.png', './img/ill_db_bench.png', './img/ill_deadlift.png', './img/ill_dips.png', './img/ill_floor_press.png', './img/ill_goodmorning.png', './img/ill_hyperext.png', './img/ill_inverted_row.png', './img/ill_lat_raise.png', './img/ill_lunge.png', './img/ill_lunge_back.png', './img/ill_military.png', './img/ill_neck.png', './img/ill_press_behind.png', './img/ill_pullover.png', './img/ill_pullup.png', './img/ill_pushup.png', './img/ill_row.png', './img/ill_snatch.png', './img/ill_squat.png', './img/ill_squat_1leg.png', './img/ill_tbar.png', './img/ill_zercher_squat.png', './img/rowing.jpg', './img/sdt_azeri.jpg', './img/tirage_front.jpg', './img/zercher.jpg'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).then(() => Promise.allSettled(EXTRA.map(u => c.add(u)))))); self.skipWaiting(); });
