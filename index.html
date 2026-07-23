@@ -501,7 +501,8 @@ function getCurrentWeek(){
   const now=new Date();
   const start=new Date(PROG_START+'T00:00:00');
   const diff=Math.floor((now-start)/(7*864e5));
-  return Math.min(5,Math.max(1,diff+1));
+  if(diff<0) return 1;
+  return diff%5+1; // cycle de 5 semaines : après la décharge, retour en semaine 1
 }
 function updateDateLine(){
   const now=new Date();
