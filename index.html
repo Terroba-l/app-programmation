@@ -201,7 +201,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div><div class="sv">15</div><div class="sl">Séances</div></div>
     <div><div class="sv">5</div><div class="sl">Semaines</div></div>
     <div><div class="sv">7/7</div><div class="sl">Jours actifs</div></div>
-    <div><div class="sv">~960</div><div class="sl">Min / Cycle</div></div>
+    <div><div class="sv">~630</div><div class="sl">Min / Cycle</div></div>
   </div>
   <div class="sep"></div>
 </div>
@@ -470,13 +470,65 @@ function buildLutte(day){
     cd:'Retour au calme : étirements + mobilité cou/épaules'});
 }
 const DAYS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
-const WEEKS={
-  1:['lutte_lundi','fullbody','lutte_mercredi','explo3','lutte_vendredi','lact2','ppg_day'],
-  2:['lutte_lundi','endu3','lutte_mercredi','force2','lutte_vendredi','lactiqueC','ppg_day'],
-  3:['lutte_lundi','lactiqueP','lutte_mercredi','grip','lutte_vendredi','explo1','ppg_day'],
-  4:['lutte_lundi','force4','lutte_mercredi','plyo','lutte_vendredi','endu5','ppg_day'],
-  5:['lutte_lundi','deload_force','lutte_mercredi','deload_explo','lutte_vendredi','plyo','ppg_day']
+// Programme court (petite salle) : Force A / Assault Bike / Force B. Les anciennes séances restent dans S.
+const WEEK_SHORT=['lutte_lundi','forceA','lutte_mercredi','bike','lutte_vendredi','forceB','ppg_day'];
+const WEEKS={1:WEEK_SHORT,2:WEEK_SHORT,3:WEEK_SHORT,4:WEEK_SHORT,5:WEEK_SHORT};
+const PH={
+  1:{dl:'~105 kg',zer:'60 kg',row:'60 kg',fen:'50 kg',mil:'~40 kg',tr:'+35 kg'},
+  2:{dl:'~110 kg',zer:'65 kg',row:'65 kg',fen:'55 kg',mil:'~45 kg',tr:'+40 kg'},
+  3:{dl:'~120 kg',zer:'70 kg',row:'70 kg',fen:'60 kg',mil:'~47 kg',tr:'+45 kg'},
+  4:{dl:'~125 kg',zer:'75-80 kg',row:'70-75 kg',fen:'65 kg',mil:'~50 kg',tr:'+50 kg'}
 };
+const BIKE={
+  1:{s:'10 intervalles',d:'20 s à fond / 40 s lent',rest:'intégré'},
+  2:{s:'8 intervalles',d:'30 s fort / 30 s lent',rest:'intégré'},
+  3:{s:'4 blocs',d:'Blocs de 3 min : alterner 20 s fort / 10 s léger (durée d\'une période)',rest:'2 min entre blocs'},
+  4:{s:'5 blocs',d:'Blocs de 2 min à 90 % de l\'effort max',rest:'1 min entre blocs'},
+  5:{s:'1 bloc',d:'20-25 min facile, rythme où tu peux parler',rest:''}
+};
+function buildPhys(id){
+  const w=week,p=PH[w],dl=w===5,rp=w<=2?5:w===3?4:3,pct=['75 %','80 %','85 %','85-90 %','50-60 %'][w-1];
+  if(id==='bike'){
+    const b=BIKE[w];
+    return {id:'bike',title:'Assault Bike – Intervals',sub:'Cardio lactique · Assault Bike',type:'lact',icon:'🚴',inten:[4,4,5,5,2][w-1],dur:dl?'30 min':'40 min',
+      wu:['5 min Assault Bike facile','3 sprints de 10 s en montée progressive'],
+      blocs:[{n:'Intervals Assault Bike',s:b.s,rest:b.rest,ex:[{n:'Assault Bike',d:b.d}]}],
+      notes:dl?'Semaine de décharge : aucun effort max, juste faire tourner les jambes.':'Chaque semaine, vise le même rythme sur toutes les répétitions : si ça s\'effondre sur la fin, tu es parti trop fort.',
+      cd:'5 min vélo très lent + étirements quadriceps / ischio-jambiers'};
+  }
+  if(id==='forceA'){
+    const hinge=w%2===1;
+    const main=dl?{n:'Soulevé de terre sumo',s:'3 × 5',rest:'90 sec',d:'5 reps @ 50-60 % — 70-85 kg, focus placement'}
+      :hinge?{n:'Soulevé de terre sumo',s:'5 × '+rp,rest:'2-3 min',d:rp+' reps @ '+pct+' — '+p.dl}
+      :{n:'Zercher squat',s:'5 × '+rp,rest:'2-3 min',d:rp+' reps @ '+pct+' — '+p.zer};
+    return {id:'forceA',title:'Force A – Bas du corps & Tirage',sub:(dl?'Décharge':hinge?'SDT sumo':'Zercher squat')+' · Rowing · Fentes',type:'force',icon:'🏋️',inten:[3,4,4,5,2][w-1],dur:dl?'35 min':'45 min',
+      wu:['5 min cardio léger','Mobilité hanches et dos — 3 min','2 séries légères du 1er exercice'],
+      blocs:[
+        {n:main.n,s:main.s,rest:main.rest,ex:[{n:main.n,d:main.d}]},
+        dl?{n:'Rowing barre léger',s:'3 × 8',rest:'90 sec',ex:[{n:'Rowing barre',d:'8 reps — 50 kg, amplitude max'}]}
+          :{n:'Rowing barre',s:'4 × 6',rest:'90 sec',ex:[{n:'Rowing barre',d:'6 reps — '+p.row}]},
+        dl?{n:'Fentes avant',s:'3 × 8',rest:'90 sec',ex:[{n:'Fentes avant',d:'8 reps / jambe — 40 kg, amplitude complète'}]}
+          :{n:'Fentes avant',s:'3 × 6 / jambe',rest:'90 sec',ex:[{n:'Fentes avant',d:'6 reps / jambe — '+p.fen}]},
+        {n:'Nuque & Lombaires',s:'3 séries',rest:'45 sec',ex:[{n:'Travail de nuque',d:'3 × 15 reps'},{n:'Lombaires',d:'3 × 15 reps'}]}
+      ],
+      notes:dl?'Décharge : 50-60 % des charges, technique propre.':'Charges indicatives (% de ton max). Si la dernière série est ratée, reste à la même charge la semaine suivante.',
+      cd:'Étirements fessiers, ischio-jambiers, quadriceps — 3 min'};
+  }
+  return {id:'forceB',title:'Force B – Haut du corps & Puissance',sub:'Dév militaire · Tractions · Arraché KB',type:'force',icon:'💪',inten:[3,4,4,5,2][w-1],dur:dl?'30 min':'40 min',
+    wu:['5 min cardio léger','Mobilité épaules et thorax — 3 min','2 séries légères de développé militaire'],
+    blocs:[
+      dl?{n:'Développé militaire',s:'3 × 8',rest:'90 sec',ex:[{n:'Développé militaire',d:'8 reps @ 50 % — ~30 kg'}]}
+        :{n:'Développé militaire',s:'5 × '+rp,rest:'2 min',ex:[{n:'Développé militaire',d:rp+' reps @ '+pct+' — '+p.mil}]},
+      dl?{n:'Tractions',s:'3 × 5',rest:'90 sec',ex:[{n:'Tractions',d:'5 reps au poids de corps'}]}
+        :{n:'Tractions lestées',s:'4 × 5',rest:'2 min',ex:[{n:'Tractions lestées',d:'5 reps — '+p.tr}]},
+      dl?{n:'Arraché kettlebell léger',s:'3 × 5',rest:'90 sec',ex:[{n:'Arraché kettlebell',d:'5 reps / côté — KB 12-16 kg'}]}
+        :{n:'Arraché kettlebell',s:'5 × 6',rest:'90 sec',ex:[{n:'Arraché kettlebell',d:'6 reps / côté — KB 20-24 kg, explosif'}]}
+    ].concat(dl?[]:[
+      {n:'Duo – Finisher',s:'4 tours',rest:'alterné sans pause',ex:[{n:'Développé par-dessus la tête',d:'30 sec'},{n:'Tracteur',d:'30 sec'}]}
+    ]),
+    notes:dl?'Décharge : légèreté et vitesse.':'Le Duo se lance avec ▶ Chrono : les 2 exercices s\'enchaînent 4 fois avec un seul haltère ou kettlebell.',
+    cd:'Étirements pecs, épaules et dorsaux — 3 min'};
+}
 let LOGS={};
 try{LOGS=JSON.parse(localStorage.getItem('lutte_logs')||'{}');}catch(e){}
 function saveLogs(){try{localStorage.setItem('lutte_logs',JSON.stringify(LOGS));}catch(e){}}
@@ -611,7 +663,11 @@ function exIcon(name){
   if(/enchaînement|transition/.test(n)) return '🔗';
   return '🏅';
 }
-function getSession(id){return id.indexOf('lutte_')===0?buildLutte(id.slice(6)):S[id];}
+function getSession(id){
+  if(id.indexOf('lutte_')===0) return buildLutte(id.slice(6));
+  if(id==='forceA'||id==='forceB'||id==='bike') return buildPhys(id);
+  return S[id];
+}
 function card(id,isToday){
   const tb=isToday?'<div class="today-badge">Aujourd\'hui</div>':'';
   if(id==='rest') return `<div class="rc"><div class="ri">😴</div><div class="rl">Repos</div></div>`;
@@ -622,7 +678,7 @@ function card(id,isToday){
     return `<div class="sc lutte_c${isToday?' sc-today':''}" onclick="open_('${id}')">${tb}<span class="si">🤼</span><div class="sbg" style="background:rgba(14,165,233,.12);color:var(--lutte-c)">Lutte</div><div class="ltheme">${th.theme}</div><div class="st">${d.title}</div><div class="ss">${d.sub}</div><div class="ltechs">Double · Simple glissé · John Smith</div><div class="sf" style="margin-top:auto"><span class="sdur">${d.dur}</span></div></div>`;
   }
   if(id==='ppg_day') return `<div class="sc ppg_c${isToday?' sc-today':''}">${tb}<span class="si">🏃</span><div class="sbg" style="background:rgba(163,230,53,.12);color:var(--ppg-c)">PPG</div><div class="st">Prépa Physique Générale</div><div class="ss">Cardio · Mobilité · Gainage</div><div class="sf" style="margin-top:auto"><span class="sdur">~1h</span></div></div>`;
-  const s=S[id],t=T[s.type];
+  const s=getSession(id),t=T[s.type];
   let dd='<div class="dots">';
   for(let i=1;i<=5;i++) dd+=`<div class="dot${i<=s.inten?' on':''}"></div>`;
   dd+='</div>';
@@ -908,9 +964,11 @@ function isCircuit(bl){return bl.ex.filter(e=>parseDur(e.d)!==null).length>=2;}
 const _C=2*Math.PI*85;
 let _tmr={iv:null,paused:false,exs:[],idx:0,total:0,rem:0};
 function launchCircuit(blIdx,sid){
-  const bl=S[sid].blocs[blIdx];
-  const exs=bl.ex.filter(e=>parseDur(e.d)!==null).map(e=>({n:e.n,dur:parseDur(e.d)}));
+  const bl=getSession(sid).blocs[blIdx];
+  let exs=bl.ex.filter(e=>parseDur(e.d)!==null).map(e=>({n:e.n,dur:parseDur(e.d)}));
   if(!exs.length) return;
+  const rep=bl.s&&bl.s.match(/(\d+)\s*tours/i);
+  if(rep&&+rep[1]>1&&+rep[1]<=10){const base=exs;exs=[];for(let k=0;k<+rep[1];k++)exs=exs.concat(base);}
   clearInterval(_tmr.iv);
   _tmr={iv:null,paused:false,exs,idx:0,total:exs[0].dur,rem:exs[0].dur};
   document.getElementById('tmr-ov').style.display='flex';
