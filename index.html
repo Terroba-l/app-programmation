@@ -470,65 +470,120 @@ function buildLutte(day){
     cd:'Retour au calme : étirements + mobilité cou/épaules'});
 }
 const DAYS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
-// Programme court (petite salle) : Force A / Assault Bike / Force B. Les anciennes séances restent dans S.
-const WEEK_SHORT=['lutte_lundi','forceA','lutte_mercredi','bike','lutte_vendredi','forceB','ppg_day'];
-const WEEKS={1:WEEK_SHORT,2:WEEK_SHORT,3:WEEK_SHORT,4:WEEK_SHORT,5:WEEK_SHORT};
-const PH={
-  1:{dl:'~105 kg',zer:'60 kg',row:'60 kg',fen:'50 kg',mil:'~40 kg',tr:'+35 kg'},
-  2:{dl:'~110 kg',zer:'65 kg',row:'65 kg',fen:'55 kg',mil:'~45 kg',tr:'+40 kg'},
-  3:{dl:'~120 kg',zer:'70 kg',row:'70 kg',fen:'60 kg',mil:'~47 kg',tr:'+45 kg'},
-  4:{dl:'~125 kg',zer:'75-80 kg',row:'70-75 kg',fen:'65 kg',mil:'~50 kg',tr:'+50 kg'}
-};
-const BIKE={
-  1:{s:'10 intervalles',d:'20 s à fond / 40 s lent',rest:'intégré'},
-  2:{s:'8 intervalles',d:'30 s fort / 30 s lent',rest:'intégré'},
-  3:{s:'4 blocs',d:'Blocs de 3 min : alterner 20 s fort / 10 s léger (durée d\'une période)',rest:'2 min entre blocs'},
-  4:{s:'5 blocs',d:'Blocs de 2 min à 90 % de l\'effort max',rest:'1 min entre blocs'},
-  5:{s:'1 bloc',d:'20-25 min facile, rythme où tu peux parler',rest:''}
-};
-function buildPhys(id){
-  const w=week,p=PH[w],dl=w===5,rp=w<=2?5:w===3?4:3,pct=['75 %','80 %','85 %','85-90 %','50-60 %'][w-1];
-  if(id==='bike'){
-    const b=BIKE[w];
-    return {id:'bike',title:'Assault Bike – Intervals',sub:'Cardio lactique · Assault Bike',type:'lact',icon:'🚴',inten:[4,4,5,5,2][w-1],dur:dl?'30 min':'40 min',
-      wu:['5 min Assault Bike facile','3 sprints de 10 s en montée progressive'],
-      blocs:[{n:'Intervals Assault Bike',s:b.s,rest:b.rest,ex:[{n:'Assault Bike',d:b.d}]}],
-      notes:dl?'Semaine de décharge : aucun effort max, juste faire tourner les jambes.':'Chaque semaine, vise le même rythme sur toutes les répétitions : si ça s\'effondre sur la fin, tu es parti trop fort.',
-      cd:'5 min vélo très lent + étirements quadriceps / ischio-jambiers'};
-  }
-  if(id==='forceA'){
-    const hinge=w%2===1;
-    const main=dl?{n:'Soulevé de terre sumo',s:'3 × 5',rest:'90 sec',d:'5 reps @ 50-60 % — 70-85 kg, focus placement'}
-      :hinge?{n:'Soulevé de terre sumo',s:'5 × '+rp,rest:'2-3 min',d:rp+' reps @ '+pct+' — '+p.dl}
-      :{n:'Zercher squat',s:'5 × '+rp,rest:'2-3 min',d:rp+' reps @ '+pct+' — '+p.zer};
-    return {id:'forceA',title:'Force A – Bas du corps & Tirage',sub:(dl?'Décharge':hinge?'SDT sumo':'Zercher squat')+' · Rowing · Fentes',type:'force',icon:'🏋️',inten:[3,4,4,5,2][w-1],dur:dl?'35 min':'45 min',
-      wu:['5 min cardio léger','Mobilité hanches et dos — 3 min','2 séries légères du 1er exercice'],
-      blocs:[
-        {n:main.n,s:main.s,rest:main.rest,ex:[{n:main.n,d:main.d}]},
-        dl?{n:'Rowing barre léger',s:'3 × 8',rest:'90 sec',ex:[{n:'Rowing barre',d:'8 reps — 50 kg, amplitude max'}]}
-          :{n:'Rowing barre',s:'4 × 6',rest:'90 sec',ex:[{n:'Rowing barre',d:'6 reps — '+p.row}]},
-        dl?{n:'Fentes avant',s:'3 × 8',rest:'90 sec',ex:[{n:'Fentes avant',d:'8 reps / jambe — 40 kg, amplitude complète'}]}
-          :{n:'Fentes avant',s:'3 × 6 / jambe',rest:'90 sec',ex:[{n:'Fentes avant',d:'6 reps / jambe — '+p.fen}]},
-        {n:'Nuque & Lombaires',s:'3 séries',rest:'45 sec',ex:[{n:'Travail de nuque',d:'3 × 15 reps'},{n:'Lombaires',d:'3 × 15 reps'}]}
-      ],
-      notes:dl?'Décharge : 50-60 % des charges, technique propre.':'Charges indicatives (% de ton max). Si la dernière série est ratée, reste à la même charge la semaine suivante.',
-      cd:'Étirements fessiers, ischio-jambiers, quadriceps — 3 min'};
-  }
-  return {id:'forceB',title:'Force B – Haut du corps & Puissance',sub:'Dév militaire · Tractions · Arraché KB',type:'force',icon:'💪',inten:[3,4,4,5,2][w-1],dur:dl?'30 min':'40 min',
-    wu:['5 min cardio léger','Mobilité épaules et thorax — 3 min','2 séries légères de développé militaire'],
+// Programme adapté salle commerciale : 3 séances physiques / semaine (mardi, jeudi, samedi), contenu variable sur le cycle.
+// Pas de plyo / box / med ball / piste / circuits à 5-6 exos. Les anciennes séances restent dans S (inutilisées).
+const NEW_S={
+  p1a:{id:'p1a',title:'Explosivité – Force & Puissance',sub:'SDT sumo · Arraché KB · Fentes',type:'explo',icon:'⚡',inten:4,dur:'50 min',
+    wu:['5 min cardio (vélo, rameur ou assault bike)','Mobilité chevilles, hanches, épaules','2 séries légères à 40-50 % du 1er mouvement'],
     blocs:[
-      dl?{n:'Développé militaire',s:'3 × 8',rest:'90 sec',ex:[{n:'Développé militaire',d:'8 reps @ 50 % — ~30 kg'}]}
-        :{n:'Développé militaire',s:'5 × '+rp,rest:'2 min',ex:[{n:'Développé militaire',d:rp+' reps @ '+pct+' — '+p.mil}]},
-      dl?{n:'Tractions',s:'3 × 5',rest:'90 sec',ex:[{n:'Tractions',d:'5 reps au poids de corps'}]}
-        :{n:'Tractions lestées',s:'4 × 5',rest:'2 min',ex:[{n:'Tractions lestées',d:'5 reps — '+p.tr}]},
-      dl?{n:'Arraché kettlebell léger',s:'3 × 5',rest:'90 sec',ex:[{n:'Arraché kettlebell',d:'5 reps / côté — KB 12-16 kg'}]}
-        :{n:'Arraché kettlebell',s:'5 × 6',rest:'90 sec',ex:[{n:'Arraché kettlebell',d:'6 reps / côté — KB 20-24 kg, explosif'}]}
-    ].concat(dl?[]:[
-      {n:'Duo – Finisher',s:'4 tours',rest:'alterné sans pause',ex:[{n:'Développé par-dessus la tête',d:'30 sec'},{n:'Tracteur',d:'30 sec'}]}
-    ]),
-    notes:dl?'Décharge : légèreté et vitesse.':'Le Duo se lance avec ▶ Chrono : les 2 exercices s\'enchaînent 4 fois avec un seul haltère ou kettlebell.',
-    cd:'Étirements pecs, épaules et dorsaux — 3 min'};
-}
+      {n:'Bloc 1 – Force & Puissance',s:'5 tours',rest:'1\'30 – 2\'',ex:[{n:'Soulevé de terre sumo @ 80 % du 1RM',d:'5 reps — ~110 kg'},{n:'Arraché kettlebell alterné',d:'6 reps — KB 20 kg'}]},
+      {n:'Bloc 2 – Jambes',s:'4 séries',rest:'90 sec',ex:[{n:'Back fentes serrées arrière',d:'10 – 10 – 8 – 8 reps — départ 60 kg, monter à 80 kg'}]},
+      {n:'Bloc 3 – Chaîne postérieure',s:'4 séries',rest:'60-90 sec',ex:[{n:'Good morning barre légère',d:'12 – 10 – 10 – 8 reps — 40-60 kg'},{n:'Lombaires',d:'3 × 30 reps'}]}
+    ],notes:'Priorité à la vitesse d\'exécution, pas à la charge max.',cd:'Mobilité hanches et ischio-jambiers'},
+  p1b:{id:'p1b',title:'Anaérobie Lactique',sub:'Tapis de course · Assault Bike · Intervals',type:'lact',icon:'🔥',inten:5,dur:'50 min',
+    wu:['5 min de vélo ou tapis facile'],
+    blocs:[
+      {n:'Tapis de course',s:'15 répétitions',rest:'30 sec (intégrée)',ex:[{n:'Sprint tapis',d:'15 × (30 sec sprint / 30 sec repos) à vitesse 12-14'}]},
+      {n:'Assault Bike',s:'2 blocs',rest:'Intégrée',ex:[{n:'Assault Bike endurance',d:'2 × 8 min (15 sec effort / 30 sec repos)'},{n:'Assault Bike sprint court',d:'2 × (10 × (7 sec sprint / 3 sec lent))'}]}
+    ],notes:null,cd:'Étirements des ischio-jambiers'},
+  p1c:{id:'p1c',title:'Explosivité – Dos & Poussée',sub:'Rowing · T-Bar · Dév couché',type:'explo',icon:'🎯',inten:4,dur:'55 min',
+    wu:['Mobilisation articulaire générale','Activation dynamique légère'],
+    blocs:[
+      {n:'Rowing Alterné & Explosif',s:'5 séries',rest:'60-90 sec',ex:[{n:'Rowing barre prise alternée',d:'6 reps — 70 kg'},{n:'Rowing explosif départ barre au sol',d:'4 reps — 60 kg'}]},
+      {n:'T-Bar',s:'5 séries',rest:'60-90 sec',ex:[{n:'T-Bar entre les jambes',d:'6 reps — 60 kg balistique'}]},
+      {n:'Poussée',s:'4 séries',rest:'60-90 sec',ex:[{n:'Développé couché haltères',d:'15 – 12 – 10 – 10 reps — 24 / 26 / 28 / 28 kg par haltère'}]},
+      {n:'Nuque',s:'',rest:'45 sec',ex:[{n:'Travail de nuque surpassé',d:'4 × 20 reps'}]}
+    ],notes:'Repos 60-90 sec entre blocs.',cd:null},
+  p2a:{id:'p2a',title:'Force – Tirage & Jambes',sub:'Tirage front · SDT Azeri · Zercher squat',type:'force',icon:'🏋️',inten:5,dur:'65 min',
+    wu:['Mobilité : cervicale, scapulaire, thoracique','Activation bandes ou poulie légère','2-3 séries légères de chaque exercice'],
+    blocs:[
+      {n:'Tirage frontal',s:'5 tours',rest:'90 sec',ex:[{n:'Tirage front sur banc (barre ou haltères)',d:'5 reps — 60 kg'}]},
+      {n:'SDT AZERI',s:'Volume progressif',rest:'Continu',ex:[{n:'SDT barre 20 kg',d:'70 reps'},{n:'SDT barre 30 kg',d:'50 reps'},{n:'SDT barre 40 kg',d:'30 reps'}]},
+      {n:'Zercher squat',s:'5 tours',rest:'90 sec',ex:[{n:'Zercher squat',d:'5 reps — 65 kg'}]},
+      {n:'Tractions lestées',s:'3 séries',rest:'2 min',ex:[{n:'Tractions lestées',d:'8 reps — +40 kg'}]}
+    ],notes:null,cd:'5 min tapis léger'},
+  p2b:{id:'p2b',title:'Lactique Cardio – Duos Cubains',sub:'Tapis pente · 2 matchs en duo',type:'lact',icon:'🔴',inten:4,dur:'60 min',
+    wu:['5 min vélo + mobilisation des articulations'],
+    blocs:[
+      {n:'Tapis de course en garde',s:'15-20 min',rest:'5 min après',ex:[{n:'Marche en garde pente 17-19°',d:'15-20 min genoux fléchis — pauses si besoin'}]},
+      {n:'Duo Cubain – Match A',s:'3 tours',rest:'2 min entre matchs',ex:[{n:'Développé par-dessus la tête',d:'30 sec'},{n:'Tracteur',d:'30 sec'}]},
+      {n:'Duo Cubain – Match B',s:'3 tours',rest:'2 min entre matchs',ex:[{n:'Tirage',d:'30 sec'},{n:'Derrière la tête',d:'30 sec'}]},
+      {n:'Finisher',s:'',rest:'',ex:[{n:'Lombaires',d:'4 × 40 reps sans poids'}]}
+    ],notes:'Un seul haltère ou kettlebell par duo : les 2 exercices s\'alternent sans pause (▶ Chrono). Structure : Tapis → 5 min → Match A → 2 min → Match B.',cd:'Étirements'},
+  p2c:{id:'p2c',title:'Endurance de Force – Supersets',sub:'Barre · Haltères · Tractions & Dips',type:'endu',icon:'🔄',inten:4,dur:'65 min',
+    wu:['Échauffement bulgare 2-4 kg','Barre 20 kg pour activation'],
+    blocs:[
+      {n:'Superset 1 – Hanches & Tirage',s:'4 tours',rest:'Enchaîné · 2 min entre tours',ex:[{n:'Soulevé de terre',d:'10 reps — départ 40 kg, +5 kg par tour'},{n:'Rowing barre',d:'10 reps'}]},
+      {n:'Superset 2 – Poussée & Jambes',s:'4 tours',rest:'Enchaîné · 2 min entre tours',ex:[{n:'Développé militaire',d:'10 reps'},{n:'Back squat',d:'10 reps'}]},
+      {n:'Haltères',s:'4 × 12 reps',rest:'1 min',ex:[{n:'Toucher sol → lever bras au-dessus de la tête',d:'Contrôle total — 20-24 kg par haltère'}]},
+      {n:'Tractions & Dips',s:'3 tours',rest:'90 sec',ex:[{n:'Tractions',d:'15 reps'},{n:'Dips',d:'20 reps'}]}
+    ],notes:'Départ 40 kg (limitant : press militaire 10 reps). +5 kg par tour si possible.',cd:'Récup 2 min après les supersets avant les haltères'},
+  p3a:{id:'p3a',title:'Force – Squat & Poussée',sub:'Double squat · SDT contre mur · Dév militaire assis',type:'force',icon:'✊',inten:4,dur:'60 min',
+    wu:['Mobilisation épaules et hanches','Série légère de chaque mouvement'],
+    blocs:[
+      {n:'Activation',s:'4 séries',rest:'45 sec',ex:[{n:'Papillon allongé sur la poulie',d:'4 × 20 reps'}]},
+      {n:'Poussée verticale',s:'',rest:'2 min',ex:[{n:'Développé militaire assis',d:'20 / 15 / 12 / 12 / 10 reps — départ 35 kg, finir à 45 kg'}]},
+      {n:'Bas du corps',s:'',rest:'2 min',ex:[{n:'Double squat bas',d:'5 × 5 reps — 80 kg'},{n:'SDT contre mur',d:'5 × 3 reps — 100 kg'}]}
+    ],notes:null,cd:null},
+  p3b:{id:'p3b',title:'Lactique – 3×3×400 m',sub:'Intervalles sur tapis · Isométrie Greco',type:'lact',icon:'🏃',inten:5,dur:'60 min',
+    wu:['5 min de tapis en trottinement','Étirements dynamiques ischio-jambiers'],
+    blocs:[
+      {n:'Blocs sur tapis',s:'3 blocs × 3 × 400 m',rest:'1 min / 4 min entre blocs',ex:[{n:'400 m répété sur tapis',d:'Objectif ~1\'25-1\'30 par 400 m selon la vitesse du tapis — récup 1 min entre les 400 m'},{n:'Entre les blocs',d:'4 min de récupération'}]},
+      {n:'Isométrie Greco',s:'2 séries',rest:'1 min',ex:[{n:'Garde Greco la plus basse possible',d:'2 × 3 min — maintien, appuis, engagement postural'}]}
+    ],notes:null,cd:'Étirements : quadriceps, ischio-jambiers, mollets'},
+  p3c:{id:'p3c',title:'Explosivité – Haut du corps & Grip',sub:'Rowing · Dips · Dév couché · Farmer walk',type:'explo',icon:'💥',inten:4,dur:'55 min',
+    wu:['Mobilité épaules, poignets','2 séries légères à 40-50 %'],
+    blocs:[
+      {n:'Rowing explosif',s:'5 séries',rest:'1\'30 – 2\'',ex:[{n:'Rowing barre explosif',d:'5 reps — 60 kg'}]},
+      {n:'Dips & Tractions',s:'5 séries',rest:'1\'30 – 2\'',ex:[{n:'Dips lestés',d:'5 reps — +30 kg'},{n:'Tractions australiennes explosives',d:'6 reps'}]},
+      {n:'Poussée & Tirage',s:'5 séries',rest:'1\'30 – 2\'',ex:[{n:'Développé couché sol haltères',d:'5 reps — 30 kg par haltère'},{n:'Tirage câble unilatéral (arm-drag)',d:'6 reps'}]},
+      {n:'Grip',s:'3 tours',rest:'1 min',ex:[{n:'Farmer walk',d:'30 m aller-retour — 30 kg par main'}]}
+    ],notes:'Prioriser la qualité d\'exécution.',cd:'Étirements dynamiques'},
+  p4a:{id:'p4a',title:'Force – Hypertrophie Jambes',sub:'SDT sumo · Fentes · Garde Greco',type:'force',icon:'🏆',inten:5,dur:'65 min',
+    wu:['5 min cardio (vélo, rameur ou assault bike)','4 × 10 reps élévation frontale haltère 7 kg'],
+    blocs:[
+      {n:'Soulevé de terre sumo',s:'5 tours',rest:'90 sec',ex:[{n:'Soulevé de terre sumo',d:'5 reps @ 80 % — cible ~110 kg'}]},
+      {n:'Fentes & Garde',s:'5 tours',rest:'90 sec',ex:[{n:'Fentes avant',d:'5 reps — cible 75-85 kg'},{n:'Garde Greco position très fléchie',d:'1 min — 30 sec jambe D / 30 sec jambe G'}]},
+      {n:'Chaîne postérieure',s:'',rest:'45 sec',ex:[{n:'Good morning bas',d:'3 × 10 reps'},{n:'Lombaires',d:'4 × 30 reps'}]}
+    ],notes:'Poids attendus : SDT sumo ~110 kg · Fente 75-85 kg.',cd:null},
+  p4b:{id:'p4b',title:'Lactique – Assault Bike & Tapis',sub:'Pente · Blocs 2 min · Sprints',type:'lact',icon:'🔴',inten:5,dur:'55 min',
+    wu:['5 min vélo facile','Mobilisation des articulations'],
+    blocs:[
+      {n:'Tapis de course en garde',s:'10 min',rest:'3 min après',ex:[{n:'Marche en garde pente 17-19°',d:'10 min genoux fléchis'}]},
+      {n:'Assault Bike',s:'5 blocs',rest:'1 min entre blocs',ex:[{n:'Assault Bike',d:'Blocs de 2 min à 90 % de l\'effort max'}]},
+      {n:'Tapis de course',s:'8 répétitions',rest:'30 sec (intégrée)',ex:[{n:'Sprint tapis',d:'8 × (30 sec sprint / 30 sec repos) à vitesse 12-14'}]}
+    ],notes:'Garde le même rythme sur tous les blocs de vélo : si ça s\'effondre sur la fin, tu es parti trop fort.',cd:'Étirements quadriceps et ischio-jambiers'},
+  p4c:{id:'p4c',title:'Force Endurance – Haut du corps',sub:'Supersets KB · Dév militaire · Duo Géorgien',type:'endu',icon:'💪',inten:4,dur:'70 min',
+    wu:['Échauffement bulgare 2-4 kg','Barre 20 kg pour activation'],
+    blocs:[
+      {n:'Force Endurance',s:'4 séries / superset',rest:'90 sec',ex:[{n:'Développé couché KB + Tirages alternés KB',d:'8 + 20 reps — KB 28 kg bench / KB 20 kg tirage'},{n:'Pull-over + Dips lestés',d:'8 + 10 reps — Dips +30 kg'}]},
+      {n:'Épaules @ 90 %',s:'5 tours',rest:'2 min',ex:[{n:'Développé militaire',d:'5 reps — cible 50 kg'}]},
+      {n:'Duo Géorgien',s:'5 tours',rest:'alterné sans pause',ex:[{n:'Élévations épaules pronation',d:'30 sec'},{n:'Tirage pronation',d:'30 sec'}]},
+      {n:'Nuque',s:'',rest:'30 sec',ex:[{n:'Travail de nuque (surpasser) 10 kg',d:'4 × 20 reps'}]}
+    ],notes:'Barre 20 kg pour le duo Géorgien. 1 duo = 5 min en continu (▶ Chrono).',cd:null},
+  p5a:{id:'p5a',title:'Force – Décharge',sub:'Technique · 50-60 % des charges',type:'force',icon:'🏆',inten:2,dur:'45 min',
+    wu:['5 min vélo très léger ou marche','Mobilité hanches, épaules, thorax — 10 min'],
+    blocs:[
+      {n:'Bloc 1',s:'3 tours',rest:'90 sec',ex:[{n:'Soulevé de terre sumo',d:'5 reps @ 50-60 % — 70-85 kg, focus placement'},{n:'Kettlebell arraché léger',d:'8 reps — KB 12-16 kg'}]},
+      {n:'Bloc 2',s:'3 tours',rest:'90 sec',ex:[{n:'Fentes avant',d:'8 reps @ 50 % — 40-45 kg, amplitude complète'},{n:'Garde Greco isométrie',d:'45 sec — respiration contrôlée'}]},
+      {n:'Bloc 3',s:'3 tours',rest:'90 sec',ex:[{n:'Développé militaire',d:'8 reps @ 50 % — ~30 kg'}]}
+    ],notes:'Semaine de décharge : 50-60 % des charges habituelles. Priorité récupération et technique.',cd:null},
+  p5b:{id:'p5b',title:'Assault Bike – Récupération active',sub:'Facile · Mobilité',type:'lact',icon:'🚴',inten:2,dur:'35 min',
+    wu:['5 min assault bike très facile'],
+    blocs:[
+      {n:'Assault Bike facile',s:'1 bloc',rest:'',ex:[{n:'Assault Bike',d:'20-25 min à un rythme où tu peux parler'}]},
+      {n:'Mobilité',s:'',rest:'',ex:[{n:'Mobilité complète',d:'Hanches, épaules, thorax — 10 min'}]}
+    ],notes:'Aucun effort max : on fait juste circuler le sang.',cd:'Étirements 10 min'},
+  p5c:{id:'p5c',title:'Coordination & Technique',sub:'Technique · Nuque · Lombaires',type:'explo',icon:'⚡',inten:2,dur:'45 min',
+    wu:['Mobilité articulaire complète : 10 min'],
+    blocs:[
+      {n:'Technique',s:'3 séries',rest:'90 sec',ex:[{n:'Soulevé de terre sumo',d:'5 reps @ 50 % — 70 kg, focus dos plat'},{n:'Rowing barre léger',d:'8 reps — 50 kg, amplitude max'}]},
+      {n:'Nuque & Lombaires',s:'',rest:'45 sec',ex:[{n:'Travail de nuque 5 kg',d:'3 × 15 reps'},{n:'Good morning très léger',d:'3 × 12 reps — 30 kg'}]}
+    ],notes:'Intensité très basse. Récupération active et travail technique.',cd:'Étirements 15 min'}
+};
+Object.assign(S,NEW_S);
+const WEEKS={};
+[1,2,3,4,5].forEach(w=>{WEEKS[w]=['lutte_lundi','p'+w+'a','lutte_mercredi','p'+w+'b','lutte_vendredi','p'+w+'c','ppg_day'];});
 let LOGS={};
 try{LOGS=JSON.parse(localStorage.getItem('lutte_logs')||'{}');}catch(e){}
 function saveLogs(){try{localStorage.setItem('lutte_logs',JSON.stringify(LOGS));}catch(e){}}
@@ -665,7 +720,6 @@ function exIcon(name){
 }
 function getSession(id){
   if(id.indexOf('lutte_')===0) return buildLutte(id.slice(6));
-  if(id==='forceA'||id==='forceB'||id==='bike') return buildPhys(id);
   return S[id];
 }
 function card(id,isToday){
