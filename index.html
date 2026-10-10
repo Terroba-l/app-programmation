@@ -530,7 +530,7 @@ const NEW_S={
     blocs:[
       {n:'Blocs sur piste',s:'3 blocs × 3 × 400 m',rest:'1 min / 4 min entre blocs',ex:[{n:'400 m répété',d:'Objectif < 1\'25 par 400 m — récup 1 min entre les 400 m'},{n:'Entre les blocs',d:'4 min de récupération'}]},
       {n:'Isométrie Greco',s:'2 séries',rest:'1 min',ex:[{n:'Garde Greco la plus basse possible',d:'2 × 3 min — maintien, appuis, engagement postural'}]}
-    ],notes:'Séance clé de la semaine 3 : le mardi est lourd en jambes, garde 48 h de récupération avant la piste. Sans piste disponible, reprends les 400 m sur tapis (~1\'25-1\'30).',cd:'Étirements : quadriceps, ischio-jambiers, mollets'},
+    ],notes:'Séance clé de la semaine 3, placée le samedi : mardi jambes lourdes, jeudi haut du corps, donc jambes fraîches pour la piste. Sans piste disponible, reprends les 400 m sur tapis (~1\'25-1\'30).',cd:'Étirements : quadriceps, ischio-jambiers, mollets'},
   p3c:{id:'p3c',title:'Explosivité – Haut du corps & Grip',sub:'Rowing · Dips · Dév couché · Farmer walk',type:'explo',icon:'💥',inten:4,dur:'55 min',
     wu:['Mobilité épaules, poignets','2 séries légères à 40-50 %'],
     blocs:[
@@ -584,6 +584,7 @@ const NEW_S={
 Object.assign(S,NEW_S);
 const WEEKS={};
 [1,2,3,4,5].forEach(w=>{WEEKS[w]=['lutte_lundi','p'+w+'a','lutte_mercredi','p'+w+'b','lutte_vendredi','p'+w+'c','ppg_day'];});
+WEEKS[3]=['lutte_lundi','p3a','lutte_mercredi','p3c','lutte_vendredi','p3b','ppg_day']; // piste le samedi
 let LOGS={};
 try{LOGS=JSON.parse(localStorage.getItem('lutte_logs')||'{}');}catch(e){}
 function saveLogs(){try{localStorage.setItem('lutte_logs',JSON.stringify(LOGS));}catch(e){}}
